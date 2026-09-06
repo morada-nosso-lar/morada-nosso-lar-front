@@ -1,11 +1,19 @@
-import Form from "../../Components/Form/index";
+import Box from "@mui/material/Box";
+import LoginForm from "../../Components/LoginForm";
 
-function Login() {
+export default function Login() {
   return (
-    <>
-      <Form />
-    </>
+
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
+        backgroundColor: "#EAF4FC",
+      }}
+    >
+      <LoginForm />
+    </Box>
   );
 }
-
-export default Login;

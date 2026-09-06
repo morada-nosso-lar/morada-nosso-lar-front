@@ -1,10 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import Login from "./Pages/Login/index";
 
+import  AppRouter from "./Router/index.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Login />
+    <AppRouter />
   </StrictMode>,
 );
