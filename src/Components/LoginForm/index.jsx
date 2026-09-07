@@ -11,9 +11,30 @@ import LockIcon from "@mui/icons-material/Lock";
 import IconButton from "@mui/material/IconButton";
 import VisibilityOutlined from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlined from "@mui/icons-material/VisibilityOffOutlined";
+import FormHelperText from "@mui/material/FormHelperText";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { loginSchema } from "./schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = (data) => {
+    console.log(data);
+
+    navigate("/dashboard");
+  };
 
   return (
     <>
@@ -26,7 +47,7 @@ export default function LoginForm() {
           boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Box className="header-form" sx={{ textAlign: "center", mb: 3 }}>
             <img
               src={logo}
@@ -63,6 +84,7 @@ export default function LoginForm() {
           </InputLabel>
           <OutlinedInput
             placeholder="exemplo@gmail.com"
+            error={!!errors.email}
             fullWidth
             sx={{ mb: 2, borderRadius: "12px", height: "40px" }}
             startAdornment={
@@ -70,7 +92,14 @@ export default function LoginForm() {
                 <MailOutlineIcon sx={{ color: "#7F8C8D" }} />
               </InputAdornment>
             }
+            {...register("email")}
           />
+
+          {errors?.email && (
+            <FormHelperText error sx={{ marginLeft: "5px" }}>
+              {errors.email.message}
+            </FormHelperText>
+          )}
 
           <InputLabel sx={{ mt: "10px", mb: "10px", ml: "5px" }}>
             <Typography
@@ -83,6 +112,7 @@ export default function LoginForm() {
 
           <OutlinedInput
             type={showPassword ? "text" : "password"}
+            error={!!errors.senha}
             placeholder="********"
             fullWidth
             sx={{ mb: 3, borderRadius: "12px", height: "40px" }}
@@ -94,10 +124,9 @@ export default function LoginForm() {
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
-                  onClick={() => setShowPassword(!showPassword)} // Inverte o estado ao clicar
+                  onClick={() => setShowPassword(!showPassword)}
                   edge="end"
                 >
-                  {/* 3. Mostra o ícone de olho riscado se a senha estiver visível, ou o normal se estiver oculta */}
                   {showPassword ? (
                     <VisibilityOffOutlined />
                   ) : (
@@ -106,10 +135,17 @@ export default function LoginForm() {
                 </IconButton>
               </InputAdornment>
             }
+            {...register("senha")}
           />
 
+          {errors?.senha && (
+            <FormHelperText error sx={{ mb: "15px" }}>
+              {errors.senha.message}
+            </FormHelperText>
+          )}
+
           <Button
-            type="button"
+            type="submit"
             sx={{
               display: "block",
               margin: "0 auto",
