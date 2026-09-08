@@ -17,6 +17,8 @@ import { useForm } from "react-hook-form";
 import { loginSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import axios from "axios";
+
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -30,10 +32,34 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    try {
+      // 1. Traduzindo o objeto do Front (senha) para o padrão do Back (password)
+      const payloadParaOBackend = {
+        email: data.email,
+        password: data.senha,
+      };
 
-    navigate("/dashboard");
+      // 2. Disparando o Axios com o objeto traduzido
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        payloadParaOBackend,
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log("Sucesso! Bem vindo!", response.data.user.name);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+
+      if (error.response) {
+        alert(error.response.data.error || "Dados de login inválidos.");
+      } else {
+        alert("Servidor indisponível.");
+      }
+    }
   };
 
   return (
