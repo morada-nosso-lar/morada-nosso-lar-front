@@ -16,11 +16,13 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { loginSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar"; // 1. Nova importação adicionada!
 import axios from "axios";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
   const navigate = useNavigate();
 
@@ -32,15 +34,22 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setLoginError("");
+  };
+
   const onSubmit = async (data) => {
+    setLoginError("");
+
     try {
-      // 1. Traduzindo o objeto do Front (senha) para o padrão do Back (password)
       const payloadParaOBackend = {
         email: data.email,
         password: data.senha,
       };
 
-      // 2. Disparando o Axios com o objeto traduzido
       const response = await axios.post(
         "http://localhost:3000/api/auth/login",
         payloadParaOBackend,
@@ -55,9 +64,11 @@ export default function LoginForm() {
       console.error(error);
 
       if (error.response) {
-        alert(error.response.data.error || "Dados de login inválidos.");
+        setLoginError(
+          "Dados de login inválidos. Verifique seu e-mail e senha.",
+        );
       } else {
-        alert("Servidor indisponível.");
+        setLoginError("Servidor indisponível no momento.");
       }
     }
   };
@@ -191,6 +202,21 @@ export default function LoginForm() {
             Entrar
           </Button>
         </form>
+
+   <Snackbar
+        open={!!loginError} 
+        autoHideDuration={5000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'left' }} 
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="error"
+          sx={{ width: '100%', boxShadow: 3 }}
+        >
+          {loginError}
+        </Alert>
+      </Snackbar>
       </Box>
     </>
   );
