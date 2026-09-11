@@ -1,0 +1,34 @@
+name: Front-end CI
+
+# 1. Quando essa pipeline vai rodar?
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+# 2. O que ela vai fazer?
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+    # Passo A: O robô entra na sua branch e baixa os arquivos
+    - name: 📥 Checkout do código
+      uses: actions/checkout@v4
+
+    # Passo B: O robô instala o Node.js no computador virtual dele
+    - name: 🟢 Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20' # Versão recomendada e atual do Node
+        cache: 'npm'
+
+    # Passo C: Instala as bibliotecas (React, Vite, MUI, etc.)
+    - name: 📦 Instalar dependências
+      run: npm install
+
+    # Passo D: Tenta compilar o projeto para produção
+    - name: 🏗️ Executar Build (Vite)
+      run: npm run build
