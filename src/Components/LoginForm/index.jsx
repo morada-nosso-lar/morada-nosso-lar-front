@@ -101,7 +101,7 @@ export default function LoginForm() {
                 color: "#7F8C8D",
               }}
             >
-              Acesse com a conta de administrador para realizar o login
+              Acesse com a conta de adm para realizar o login
             </Typography>
           </Box>
 
