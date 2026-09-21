@@ -4,6 +4,8 @@ import "./style.css";
 import AddIcon from "@mui/icons-material/Add";
 import DashboardCard from "../../Components/DashboardCard/DashboardCard";
 import PatientTable from "../../Components/PatientTable/PatientTable";
+import PatientModal from "../../Components/PatientModal/PatientModal";
+import { useState } from "react";
 
 export default function Dashboard() {
   const mockPacientes = [
@@ -58,12 +60,15 @@ export default function Dashboard() {
     (paciente) => paciente.status === "critico",
   ).length;
 
+  const [IsOpenModal, setIsOpenModal] = useState(false);
+
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
+          onClick={() => setIsOpenModal(true)}
           sx={{
             bgcolor: "#16A34A",
             color: "#FFF",
@@ -87,8 +92,10 @@ export default function Dashboard() {
       </Box>
 
       <Box sx={{ mt: "40px" }}>
-        <PatientTable  pacientes = {mockPacientes} />
+        <PatientTable pacientes={mockPacientes} />
       </Box>
+
+      <PatientModal open={IsOpenModal} onClose={() => setIsOpenModal(false)} />
     </>
   );
 }
