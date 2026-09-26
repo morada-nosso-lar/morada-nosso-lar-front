@@ -5,58 +5,58 @@ import AddIcon from "@mui/icons-material/Add";
 import DashboardCard from "../../Components/DashboardCard/DashboardCard";
 import PatientTable from "../../Components/PatientTable/PatientTable";
 import PatientModal from "../../Components/PatientModal/PatientModal";
-import { useState } from "react";
+// 1. Importa a nova função deletePaciente
+import { getPacientes, deletePaciente } from "../../services/pacientes";
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
-  const mockPacientes = [
-    {
-      id: 1,
-      nome: "Rogerio Ceni",
-      idade: 50,
-      medicamentos: 4,
-      status: "ok",
-      alertaMsg: "OK",
-    },
-    {
-      id: 2,
-      nome: "João Carlos Ferreira",
-      idade: 82,
-      medicamentos: 3,
-      status: "critico",
-      alertaMsg: "1 crítico",
-    },
-    {
-      id: 3,
-      nome: "Antônia Rodrigues Lima",
-      idade: 75,
-      medicamentos: 3,
-      status: "critico",
-      alertaMsg: "1 crítico",
-    },
-    {
-      id: 4,
-      nome: "Francisca Souza Neto",
-      idade: 89,
-      medicamentos: 2,
-      status: "critico",
-      alertaMsg: "1 crítico",
-    },
-    {
-      id: 5,
-      nome: "Renato Gaucho",
-      idade: 50,
-      medicamentos: 0,
-      status: "ok",
-      alertaMsg: "OK",
-    },
-  ];
+  const [pacientes, setpacientes] = useState([]);
 
-  const totalPacientes = mockPacientes.length;
-  const totalMedicamentos = mockPacientes.reduce(
+  useEffect(() => {
+    async function carregar() {
+      try {
+        const resposta = await getPacientes();
+
+        if (resposta.success) {
+          setpacientes(resposta.data);
+        }
+      } catch (error) {
+        console.error("erro ao carregar dados do paciente", error);
+      }
+    }
+
+    carregar();
+  }, []);
+
+  // 2. Cria a função que lida com o clique de exclusão
+  async function handleDelete(id) {
+    const confirmacao = window.confirm("Tem certeza que deseja excluir este paciente?");
+    
+    if (confirmacao) {
+      try {
+        // Vai ao backend apagar
+        await deletePaciente(id);
+        
+        // Atualiza a lista na tela removendo o paciente excluído (sem dar refresh na página)
+        setpacientes((pacientesAntigos) => 
+          pacientesAntigos.filter((paciente) => paciente.id !== id)
+        );
+      } catch (error) {
+        console.error("Erro ao excluir paciente:", error);
+        alert("Não foi possível excluir o paciente.");
+      }
+    }
+  }
+
+  const totalPacientes = pacientes.length;
+  
+  // Intocado conforme solicitado
+  const totalMedicamentos = pacientes.reduce(
     (total, paciente) => total + paciente.medicamentos,
     0,
   );
-  const alertasCriticos = mockPacientes.filter(
+  
+  const alertasCriticos = pacientes.filter(
     (paciente) => paciente.status === "critico",
   ).length;
 
@@ -87,12 +87,13 @@ export default function Dashboard() {
 
       <Box sx={{ display: "flex", gap: 3 }}>
         <DashboardCard title="Pacientes" value={totalPacientes} />
-        <DashboardCard title="Medicamentos" value={totalMedicamentos} />
+        <DashboardCard title="Medicamentos" value={0} />
         <DashboardCard title="Alertas Críticos" value={alertasCriticos} />
       </Box>
 
       <Box sx={{ mt: "40px" }}>
-        <PatientTable pacientes={mockPacientes} />
+        {/* 3. Aspas removidas: passado diretamente como variável JavaScript */}
+        <PatientTable pacientes={pacientes} onDelete={handleDelete} />
       </Box>
 
       <PatientModal open={IsOpenModal} onClose={() => setIsOpenModal(false)} />

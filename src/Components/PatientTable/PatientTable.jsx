@@ -13,9 +13,22 @@ import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 
+export default function PatientTable({ pacientes, onDelete }) {
+  function calcularIdade(dataNascimento) {
+    if (!dataNascimento) return "--";
 
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento);
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
 
-export default function PatientTable({pacientes}) {
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+      idade--;
+    }
+
+    return idade;
+  }
+
   return (
     <TableContainer component={Paper} variant="outlined">
       <Table>
@@ -40,97 +53,104 @@ export default function PatientTable({pacientes}) {
         </TableHead>
 
         <TableBody>
-          {pacientes.map((paciente) => (
-            <TableRow key={paciente.id} hover>
-              <TableCell>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Avatar
-                    sx={{
-                      bgcolor: "#0F4C81",
-                      width: 32,
-                      height: 32,
-                      fontSize: "14px",
-                    }}
-                  />
+          {pacientes.map((paciente) => {
+            const statusSeguro = paciente.status || "ok";
+            const alertaSeguro = paciente.alertaMsg || "OK";
+            const qtdMedicamentos = paciente.medicamentos || 0;
 
-                  <Typography sx={{ fontWeight: 500, color: "#1E293B" }}>
-                    {paciente.nome}
+            return (
+              <TableRow key={paciente.id} hover>
+                <TableCell>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Avatar
+                      sx={{
+                        bgcolor: "#0F4C81",
+                        width: 32,
+                        height: 32,
+                        fontSize: "14px",
+                      }}
+                    />
+
+                    <Typography sx={{ fontWeight: 500, color: "#1E293B" }}>
+                      {paciente.nome}
+                    </Typography>
+                  </Box>
+                </TableCell>
+
+                <TableCell>
+                  <Typography sx={{ color: "#64748B" }}>
+                    {calcularIdade(paciente.data_nascimento)} anos
                   </Typography>
-                </Box>
-              </TableCell>
+                </TableCell>
 
-
-              <TableCell>
-                <Typography sx={{ color: "#64748B" }}>
-                  {paciente.idade} anos
-                </Typography>
-              </TableCell>
-
-              <TableCell>
-                <Chip
-                  icon={<Inventory2OutlinedIcon style={{ color: "#2563EB" }} />}
-                  label={`${paciente.medicamentos} items`}
-                  size="small"
-                  sx={{
-                    backgroundColor: "#DBEAFE",
-                    color: "#2563EB",
-                    fontWeight: 500,
-                  }}
-                />
-              </TableCell>
-
-              <TableCell>
-                <Chip
-                  icon={
-                    paciente.status === "ok" ? (
-                      <CheckIcon style={{ color: "#16A34A" }} />
-                    ) : (
-                      <WarningAmberIcon style={{ color: "#DC2626" }} />
-                    )
-                  }
-                  label={paciente.alertaMsg}
-                  size="small"
-                  sx={{
-                    // Lógica das Cores: Verifica o status para pintar o fundo e a letra
-                    backgroundColor:
-                      paciente.status === "ok" ? "#DCFCE7" : "#FEE2E2",
-                    color: paciente.status === "ok" ? "#16A34A" : "#DC2626",
-                    fontWeight: 500,
-                  }}
-                />
-              </TableCell>
-
-              {/* Célula 5: Ações */}
-              <TableCell>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  {/* Botão de Estoque */}
+                <TableCell>
                   <Chip
                     icon={
                       <Inventory2OutlinedIcon style={{ color: "#2563EB" }} />
                     }
-                    label="Estoque"
+                    label={`${qtdMedicamentos} itens`}
                     size="small"
                     sx={{
                       backgroundColor: "#DBEAFE",
                       color: "#2563EB",
                       fontWeight: 500,
-                      cursor: "pointer", 
-                      "&:hover": { backgroundColor: "#BFDBFE" },
                     }}
                   />
+                </TableCell>
 
-                  {/* Ícones de Edição e Exclusão */}
-                  <IconButton size="small" sx={{ color: "#64748B" }}>
-                    <EditOutlinedIcon fontSize="small" />
-                  </IconButton>
+                <TableCell>
+                  <Chip
+                    icon={
+                      statusSeguro === "ok" ? (
+                        <CheckIcon style={{ color: "#16A34A" }} />
+                      ) : (
+                        <WarningAmberIcon style={{ color: "#DC2626" }} />
+                      )
+                    }
+                    label={alertaSeguro}
+                    size="small"
+                    sx={{
+                      backgroundColor:
+                        statusSeguro === "ok" ? "#DCFCE7" : "#FEE2E2",
+                      color: statusSeguro === "ok" ? "#16A34A" : "#DC2626",
+                      fontWeight: 500,
+                    }}
+                  />
+                </TableCell>
 
-                  <IconButton size="small" sx={{ color: "#64748B" }}>
-                    <DeleteOutlinedIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              </TableCell>
-            </TableRow>
-          ))}
+                <TableCell>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Chip
+                      icon={
+                        <Inventory2OutlinedIcon style={{ color: "#2563EB" }} />
+                      }
+                      label="Estoque"
+                      size="small"
+                      sx={{
+                        backgroundColor: "#DBEAFE",
+                        color: "#2563EB",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        "&:hover": { backgroundColor: "#BFDBFE" },
+                      }}
+                    />
+
+                    <IconButton size="small" sx={{ color: "#64748B" }}>
+                      <EditOutlinedIcon fontSize="small" />
+                    </IconButton>
+
+                    <IconButton 
+                      size="small" 
+                      sx={{ color: "#64748B" }} 
+                      onClick={() => onDelete(paciente.id)}
+                    >
+                      <DeleteOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>
