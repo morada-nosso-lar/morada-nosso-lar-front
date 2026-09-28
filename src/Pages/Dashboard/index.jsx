@@ -5,7 +5,6 @@ import AddIcon from "@mui/icons-material/Add";
 import DashboardCard from "../../Components/DashboardCard/DashboardCard";
 import PatientTable from "../../Components/PatientTable/PatientTable";
 import PatientModal from "../../Components/PatientModal/PatientModal";
-// 1. Importa a nova função deletePaciente
 import { getPacientes, deletePaciente } from "../../services/pacientes";
 import { useEffect, useState } from "react";
 
@@ -30,16 +29,18 @@ export default function Dashboard() {
 
   // 2. Cria a função que lida com o clique de exclusão
   async function handleDelete(id) {
-    const confirmacao = window.confirm("Tem certeza que deseja excluir este paciente?");
-    
+    const confirmacao = window.confirm(
+      "Tem certeza que deseja excluir este paciente?",
+    );
+
     if (confirmacao) {
       try {
         // Vai ao backend apagar
         await deletePaciente(id);
-        
+
         // Atualiza a lista na tela removendo o paciente excluído (sem dar refresh na página)
-        setpacientes((pacientesAntigos) => 
-          pacientesAntigos.filter((paciente) => paciente.id !== id)
+        setpacientes((pacientesAntigos) =>
+          pacientesAntigos.filter((paciente) => paciente.id !== id),
         );
       } catch (error) {
         console.error("Erro ao excluir paciente:", error);
@@ -49,18 +50,28 @@ export default function Dashboard() {
   }
 
   const totalPacientes = pacientes.length;
-  
-  // Intocado conforme solicitado
+
   const totalMedicamentos = pacientes.reduce(
     (total, paciente) => total + paciente.medicamentos,
     0,
   );
-  
+
   const alertasCriticos = pacientes.filter(
     (paciente) => paciente.status === "critico",
   ).length;
 
   const [IsOpenModal, setIsOpenModal] = useState(false);
+
+  async function onPatientCreated() {
+    try {
+      const resposta = await getPacientes();
+      if (resposta.success) {
+        setpacientes(resposta.data);
+      }
+    } catch (error) {
+      console.error("erro ao recarregar a lista após cadastro", error);
+    }
+  }
 
   return (
     <>
@@ -92,11 +103,14 @@ export default function Dashboard() {
       </Box>
 
       <Box sx={{ mt: "40px" }}>
-        {/* 3. Aspas removidas: passado diretamente como variável JavaScript */}
         <PatientTable pacientes={pacientes} onDelete={handleDelete} />
       </Box>
 
-      <PatientModal open={IsOpenModal} onClose={() => setIsOpenModal(false)} />
+      <PatientModal
+        open={IsOpenModal}
+        onClose={() => setIsOpenModal(false)}
+        onPatientCreated={onPatientCreated}
+      />
     </>
   );
 }

@@ -72,14 +72,14 @@ export default function PatientTable({ pacientes, onDelete }) {
                     />
 
                     <Typography sx={{ fontWeight: 500, color: "#1E293B" }}>
-                      {paciente.nome}
+                      {paciente.nomeCompleto}
                     </Typography>
                   </Box>
                 </TableCell>
 
                 <TableCell>
                   <Typography sx={{ color: "#64748B" }}>
-                    {calcularIdade(paciente.data_nascimento)} anos
+                    {calcularIdade(paciente.dataNascimento)} anos
                   </Typography>
                 </TableCell>
 
