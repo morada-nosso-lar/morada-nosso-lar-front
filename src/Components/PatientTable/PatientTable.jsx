@@ -10,7 +10,6 @@ import { Box, Typography, Avatar, IconButton } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 
 export default function PatientTable({ pacientes, onDelete }) {
@@ -135,9 +134,7 @@ export default function PatientTable({ pacientes, onDelete }) {
                       }}
                     />
 
-                    <IconButton size="small" sx={{ color: "#64748B" }}>
-                      <EditOutlinedIcon fontSize="small" />
-                    </IconButton>
+                    
 
                     <IconButton 
                       size="small" 

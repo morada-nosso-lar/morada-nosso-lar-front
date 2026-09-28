@@ -6,10 +6,14 @@ import DashboardCard from "../../Components/DashboardCard/DashboardCard";
 import PatientTable from "../../Components/PatientTable/PatientTable";
 import PatientModal from "../../Components/PatientModal/PatientModal";
 import { getPacientes, deletePaciente } from "../../services/pacientes";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import { useEffect, useState } from "react";
 
 export default function Dashboard() {
   const [pacientes, setpacientes] = useState([]);
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
     async function carregar() {
@@ -18,6 +22,8 @@ export default function Dashboard() {
 
         if (resposta.success) {
           setpacientes(resposta.data);
+          setOpenSnackbar(true);
+          
         }
       } catch (error) {
         console.error("erro ao carregar dados do paciente", error);
@@ -27,7 +33,6 @@ export default function Dashboard() {
     carregar();
   }, []);
 
-  // 2. Cria a função que lida com o clique de exclusão
   async function handleDelete(id) {
     const confirmacao = window.confirm(
       "Tem certeza que deseja excluir este paciente?",
@@ -35,10 +40,8 @@ export default function Dashboard() {
 
     if (confirmacao) {
       try {
-        // Vai ao backend apagar
         await deletePaciente(id);
 
-        // Atualiza a lista na tela removendo o paciente excluído (sem dar refresh na página)
         setpacientes((pacientesAntigos) =>
           pacientesAntigos.filter((paciente) => paciente.id !== id),
         );
@@ -111,6 +114,18 @@ export default function Dashboard() {
         onClose={() => setIsOpenModal(false)}
         onPatientCreated={onPatientCreated}
       />
+
+      <Snackbar
+        variant="success"
+        open={openSnackbar}
+        autoHideDuration={5000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "left" }}
+      >
+        <Alert severity="success" sx={{ width: "100%", boxShadow: 3 }}>
+          <p>Novo Paciente cadastrado</p>
+        </Alert>
+      </Snackbar>
     </>
   );
 }

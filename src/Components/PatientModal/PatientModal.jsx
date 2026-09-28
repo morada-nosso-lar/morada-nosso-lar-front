@@ -6,14 +6,22 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import FormHelperText from "@mui/material/FormHelperText";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { PatientModalSchema } from "./schema";
 import { maskCPF, maskPhone } from "../../utils/masks";
 import { createPaciente } from "../../services/pacientes";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function PatientModal({ open, onClose, onPatientCreated }) {
-  const { register, handleSubmit } = useForm({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(PatientModalSchema),
   });
 
@@ -30,9 +38,16 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
       await createPaciente(dadosPaciente);
       onPatientCreated();
       onClose();
+      reset();
     } catch (error) {
       console.error(error);
     }
+
+  };
+
+  const handleClose = () => {
+    onClose();
+    reset();
   };
 
   return (
@@ -42,14 +57,37 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
       onClose={onClose}
       open={open}
       PaperProps={{
-        sx: { borderRadius: "16px", padding: "12px" },
+        sx: { borderRadius: "16px", overflow: "hidden" },
       }}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogTitle
-          sx={{ fontWeight: "bold", color: "#0F172A", fontSize: "20px" }}
+          sx={{
+            display: "flex",
+            bgcolor: "#F7F7F7",
+            justifyContent: "space-between",
+            alignItems: "center",
+            borderBottom: "1px solid #E5E7EB",
+            m: 0,
+            p: "16px 24px",
+          }}
         >
-          Novo Paciente
+          <Box sx={{ fontWeight: "bold", color: "#111827", fontSize: "18px" }}>
+            Novo Paciente
+          </Box>
+
+          <IconButton
+            onClick={handleClose}
+            sx={{
+              bgcolor: "#FEE2E2",
+              color: "#EF4444",
+              width: 28,
+              height: 28,
+              "&:hover": { bgcolor: "#FECACA" },
+            }}
+          >
+            <CloseIcon sx={{ fontSize: 16 }} />
+          </IconButton>
         </DialogTitle>
 
         <DialogContent>
@@ -74,10 +112,23 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
               </InputLabel>
               <OutlinedInput
                 fullWidth
-                placeholder="Ex: José da Silva"
-                sx={{ borderRadius: "8px" }}
+                placeholder="José da Silva"
+                size="small"
+                error={!!errors.nome}
+                sx={{
+                  borderRadius: "8px",
+                  bgcolor: "#F3F4F6",
+                  "& fieldset": { borderColor: "#E5E7EB" }, // Borda mais suave
+                  "&:hover fieldset": { borderColor: "#D1D5DB" },
+                }}
                 {...register("nome")}
               />
+
+              {errors?.nome && (
+                <FormHelperText error sx={{ marginLeft: "5px" }}>
+                  {errors.nome.message}
+                </FormHelperText>
+              )}
             </Box>
 
             <Box>
@@ -92,11 +143,25 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
                 Idade
               </InputLabel>
               <OutlinedInput
+                type="number"
+                error={!!errors.idade}
+                size="small"
                 fullWidth
-                placeholder="Ex: 75"
-                sx={{ borderRadius: "8px" }}
+                placeholder="75"
+                sx={{
+                  borderRadius: "8px",
+                  bgcolor: "#F3F4F6",
+                  "& fieldset": { borderColor: "#E5E7EB" },
+                  "&:hover fieldset": { borderColor: "#D1D5DB" },
+                }}
                 {...register("idade")}
               />
+
+              {errors?.idade && (
+                <FormHelperText error sx={{ marginLeft: "5px" }}>
+                  {errors.idade.message}
+                </FormHelperText>
+              )}
             </Box>
             <Box>
               <InputLabel
@@ -110,11 +175,24 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
                 CPF
               </InputLabel>
               <OutlinedInput
+                size="small"
                 fullWidth
-                placeholder="Ex: 000.000.000-21"
-                sx={{ borderRadius: "8px" }}
+                placeholder="123.456.789-00"
+                sx={{
+                  borderRadius: "8px",
+                  bgcolor: "#F3F4F6",
+                  "& fieldset": { borderColor: "#E5E7EB" },
+                  "&:hover fieldset": { borderColor: "#D1D5DB" },
+                }}
                 onInput={(e) => (e.target.value = maskCPF(e.target.value))}
+                {...register("cpf")}
               />
+
+              {errors?.cpf && (
+                <FormHelperText error sx={{ marginLeft: "5px" }}>
+                  {errors.cpf.message}
+                </FormHelperText>
+              )}
             </Box>
             <Box>
               <InputLabel
@@ -128,9 +206,15 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
                 Telefone
               </InputLabel>
               <OutlinedInput
+                size="small"
                 fullWidth
-                placeholder="Ex: (11) 91353-1152"
-                sx={{ borderRadius: "8px" }}
+                placeholder="(11) 98765-4321"
+                sx={{
+                  borderRadius: "8px",
+                  bgcolor: "#F3F4F6",
+                  "& fieldset": { borderColor: "#E5E7EB" },
+                  "&:hover fieldset": { borderColor: "#D1D5DB" },
+                }}
                 {...register("telefone")}
                 onInput={(e) => (e.target.value = maskPhone(e.target.value))}
               />
@@ -138,18 +222,19 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
           </Box>
         </DialogContent>
 
-        <DialogActions sx={{ padding: "0 24px 16px 24px", gap: "12px" }}>
+        <DialogActions sx={{ padding: "16px 24px", gap: "12px" }}>
           <Button
-            variant="outlined"
-            onClick={onClose}
+            variant="text"
+            onClick={handleClose}
             sx={{
               flex: 1,
               textTransform: "none",
-              borderRadius: "8px",
-              color: "#64748B",
-              borderColor: "#CBD5E1",
-              fontWeight: 600,
-              height: "44px",
+              color: "#4B5563",
+              fontWeight: 500,
+              mt: "10px",
+              mb: "10px",
+              height: "35px",
+              "&:hover": { bgcolor: "transparent", color: "red" },
             }}
           >
             Cancelar
@@ -161,16 +246,21 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
               flex: 1,
               textTransform: "none",
               borderRadius: "8px",
-              bgcolor: "#16A34A",
+              bgcolor: "#007BFF",
               fontWeight: 600,
-              height: "44px",
-              "&:hover": { bgcolor: "#15803d" },
+              mt: "10px",
+              mb: "10px",
+              height: "35px",
+              boxShadow: "none",
+              "&:hover": { bgcolor: "#0069D9", boxShadow: "none" },
             }}
           >
             Cadastrar
           </Button>
         </DialogActions>
       </form>
+
+   
     </Dialog>
   );
 }
