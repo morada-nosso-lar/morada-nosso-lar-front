@@ -29,127 +29,167 @@ export default function PatientTable({ pacientes, onDelete }) {
   }
 
   return (
-    <TableContainer component={Paper} variant="outlined">
-      <Table>
-        <TableHead sx={{ backgroundColor: "#F8FAFC" }}>
-          <TableRow>
-            <TableCell sx={{ color: "#64748B", fontWeight: "bold" }}>
-              PACIENTE
-            </TableCell>
-            <TableCell sx={{ color: "#64748B", fontWeight: "bold" }}>
-              IDADE
-            </TableCell>
-            <TableCell sx={{ color: "#64748B", fontWeight: "bold" }}>
-              MEDICAMENTOS
-            </TableCell>
-            <TableCell sx={{ color: "#64748B", fontWeight: "bold" }}>
-              ALERTAS
-            </TableCell>
-            <TableCell sx={{ color: "#64748B", fontWeight: "bold" }}>
-              AÇÕES
-            </TableCell>
-          </TableRow>
-        </TableHead>
+    <>
+      <Paper
+        variant="outlined"
+        sx={{
+          borderRadius: "10px",
+          borderColor: "#C4CEDB",
+          overflow: "hidden",
+          bgcolor: "#FFF",
+        }}
+      >
+        <Box
+          sx={{
+            p: "16px 24px",
+            borderBottom: "1px solid #E2E8F0", // Linha que separa o título da tabela
+            display: "flex",
+            justifyContent: "space-between", // Prepara o terreno se quiseres pôr um botão de filtro aqui depois
+            alignItems: "center",
+          }}
+        >
+          <Typography
+            sx={{
+              fontWeight: "bold",
+              color: "#1E293B",
+              fontSize: "16px",
+            }}
+          >
+            Tabela de Pacientes
+          </Typography>
+        </Box>
 
-        <TableBody>
-          {pacientes.map((paciente) => {
-            const statusSeguro = paciente.status || "ok";
-            const alertaSeguro = paciente.alertaMsg || "OK";
-            const qtdMedicamentos = paciente.medicamentos || 0;
+        <TableContainer component={Paper} variant="outlined">
+      
 
-            return (
-              <TableRow key={paciente.id} hover>
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Avatar
-                      sx={{
-                        bgcolor: "#0F4C81",
-                        width: 32,
-                        height: 32,
-                        fontSize: "14px",
-                      }}
-                    />
-
-                    <Typography sx={{ fontWeight: 500, color: "#1E293B" }}>
-                      {paciente.nomeCompleto}
-                    </Typography>
-                  </Box>
+          <Table>
+            <TableHead sx={{ backgroundColor: "#F8FAFC" }}>
+              <TableRow>
+                <TableCell sx={{ color: "#64748B", fontWeight: "bold" }}>
+                  PACIENTE
                 </TableCell>
-
-                <TableCell>
-                  <Typography sx={{ color: "#64748B" }}>
-                    {calcularIdade(paciente.dataNascimento)} anos
-                  </Typography>
+                <TableCell sx={{ color: "#64748B", fontWeight: "bold" }}>
+                  IDADE
                 </TableCell>
-
-                <TableCell>
-                  <Chip
-                    icon={
-                      <Inventory2OutlinedIcon style={{ color: "#2563EB" }} />
-                    }
-                    label={`${qtdMedicamentos} itens`}
-                    size="small"
-                    sx={{
-                      backgroundColor: "#DBEAFE",
-                      color: "#2563EB",
-                      fontWeight: 500,
-                    }}
-                  />
+                <TableCell sx={{ color: "#64748B", fontWeight: "bold" }}>
+                  MEDICAMENTOS
                 </TableCell>
-
-                <TableCell>
-                  <Chip
-                    icon={
-                      statusSeguro === "ok" ? (
-                        <CheckIcon style={{ color: "#16A34A" }} />
-                      ) : (
-                        <WarningAmberIcon style={{ color: "#DC2626" }} />
-                      )
-                    }
-                    label={alertaSeguro}
-                    size="small"
-                    sx={{
-                      backgroundColor:
-                        statusSeguro === "ok" ? "#DCFCE7" : "#FEE2E2",
-                      color: statusSeguro === "ok" ? "#16A34A" : "#DC2626",
-                      fontWeight: 500,
-                    }}
-                  />
+                <TableCell sx={{ color: "#64748B", fontWeight: "bold" }}>
+                  ALERTAS
                 </TableCell>
-
-                <TableCell>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Chip
-                      icon={
-                        <Inventory2OutlinedIcon style={{ color: "#2563EB" }} />
-                      }
-                      label="Estoque"
-                      size="small"
-                      sx={{
-                        backgroundColor: "#DBEAFE",
-                        color: "#2563EB",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        "&:hover": { backgroundColor: "#BFDBFE" },
-                      }}
-                    />
-
-                    
-
-                    <IconButton 
-                      size="small" 
-                      sx={{ color: "#64748B" }} 
-                      onClick={() => onDelete(paciente.id)}
-                    >
-                      <DeleteOutlinedIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
+                <TableCell sx={{ color: "#64748B", fontWeight: "bold" }}>
+                  AÇÕES
                 </TableCell>
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            </TableHead>
+
+            <TableBody>
+              {pacientes.map((paciente) => {
+                const statusSeguro = paciente.status || "ok";
+                const alertaSeguro = paciente.alertaMsg || "OK";
+                const qtdMedicamentos = paciente.medicamentos || 0;
+
+                return (
+                  <TableRow key={paciente.id} hover>
+                    <TableCell>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                      >
+                        <Avatar
+                          sx={{
+                            bgcolor: "#0F4C81",
+                            width: 32,
+                            height: 32,
+                            fontSize: "14px",
+                          }}
+                        />
+
+                        <Typography sx={{ fontWeight: 500, color: "#1E293B" }}>
+                          {paciente.nomeCompleto}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+
+                    <TableCell>
+                      <Typography sx={{ color: "#64748B" }}>
+                        {calcularIdade(paciente.dataNascimento)} anos
+                      </Typography>
+                    </TableCell>
+
+                    <TableCell>
+                      <Chip
+                        icon={
+                          <Inventory2OutlinedIcon
+                            style={{ color: "#2563EB" }}
+                          />
+                        }
+                        label={`${qtdMedicamentos} itens`}
+                        size="small"
+                        sx={{
+                          backgroundColor: "#DBEAFE",
+                          color: "#2563EB",
+                          fontWeight: 500,
+                        }}
+                      />
+                    </TableCell>
+
+                    <TableCell>
+                      <Chip
+                        icon={
+                          statusSeguro === "ok" ? (
+                            <CheckIcon style={{ color: "#16A34A" }} />
+                          ) : (
+                            <WarningAmberIcon style={{ color: "#DC2626" }} />
+                          )
+                        }
+                        label={alertaSeguro}
+                        size="small"
+                        sx={{
+                          backgroundColor:
+                            statusSeguro === "ok" ? "#DCFCE7" : "#FEE2E2",
+                          color: statusSeguro === "ok" ? "#16A34A" : "#DC2626",
+                          fontWeight: 500,
+                        }}
+                      />
+                    </TableCell>
+
+                    <TableCell>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <Chip
+                          icon={
+                            <Inventory2OutlinedIcon
+                              style={{ color: "#2563EB" }}
+                            />
+                          }
+                          label="Estoque"
+                          size="small"
+                          sx={{
+                            backgroundColor: "#DBEAFE",
+                            color: "#2563EB",
+                            fontWeight: 500,
+                            cursor: "pointer",
+                            "&:hover": { backgroundColor: "#BFDBFE" },
+                          }}
+                        />
+
+                        <IconButton
+                          size="small"
+                          sx={{ color: "#64748B" }}
+                          onClick={() => onDelete(paciente.id)}
+                        >
+                          <DeleteOutlinedIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </>
   );
 }

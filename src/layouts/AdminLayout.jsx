@@ -30,7 +30,7 @@ export default function AdminLayout({ children }) {
           "& .MuiDrawer-paper": {
             width: 250,
             boxSizing: "border-box",
-            backgroundColor: "#F8FAFC !important",
+            backgroundColor: "#F5F5F5 !important",
             color: "#000",
           },
         }}
