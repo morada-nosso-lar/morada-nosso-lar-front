@@ -11,8 +11,14 @@ import CheckIcon from "@mui/icons-material/Check";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import { useState } from "react";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
 export default function PatientTable({ pacientes, onDelete }) {
+  const [termoPesquisa, setTermoPesquisa] = useState("");
+
   function calcularIdade(dataNascimento) {
     if (!dataNascimento) return "--";
 
@@ -28,6 +34,11 @@ export default function PatientTable({ pacientes, onDelete }) {
     return idade;
   }
 
+  const pacientesFiltrados = pacientes.filter((paciente) => {
+    const nomeDoPaciente = paciente.nomeCompleto || paciente.nome || "";
+    return nomeDoPaciente.toLowerCase().includes(termoPesquisa.toLowerCase());
+  });
+
   return (
     <>
       <Paper
@@ -42,26 +53,40 @@ export default function PatientTable({ pacientes, onDelete }) {
         <Box
           sx={{
             p: "16px 24px",
-            borderBottom: "1px solid #E2E8F0", // Linha que separa o título da tabela
+            borderBottom: "1px solid #E2E8F0",
             display: "flex",
-            justifyContent: "space-between", // Prepara o terreno se quiseres pôr um botão de filtro aqui depois
+            justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <Typography
+          <OutlinedInput
+            size="small"
+            placeholder="Pesquisar Paciente....."
+            value={termoPesquisa}
+            onChange={(e) => setTermoPesquisa(e.target.value)}
+            startAdornment={
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: "#9CA3AF" }} />
+              </InputAdornment>
+            }
             sx={{
-              fontWeight: "bold",
-              color: "#1E293B",
-              fontSize: "16px",
+              bgcolor: "#F3F4F6",
+              borderRadius: "8px",
+              width: "320px",
+              "& fieldset": { borderColor: "#E5E7EB" },
+              "&:hover fieldset": { borderColor: "#D1D5DB" },
+              "&.Mui-focused fieldset": { borderColor: "#007BFF" },
             }}
+          />
+
+          <Typography
+            sx={{ color: "#6B7280", fontSize: "14px", fontWeight: 500 }}
           >
-            Tabela de Pacientes
+            {pacientesFiltrados.length} registos
           </Typography>
         </Box>
 
-        <TableContainer component={Paper} variant="outlined">
-      
-
+        <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 0, border: "none" }}>
           <Table>
             <TableHead sx={{ backgroundColor: "#F8FAFC" }}>
               <TableRow>
@@ -84,7 +109,7 @@ export default function PatientTable({ pacientes, onDelete }) {
             </TableHead>
 
             <TableBody>
-              {pacientes.map((paciente) => {
+              {pacientesFiltrados.map((paciente) => {
                 const statusSeguro = paciente.status || "ok";
                 const alertaSeguro = paciente.alertaMsg || "OK";
                 const qtdMedicamentos = paciente.medicamentos || 0;
@@ -102,10 +127,12 @@ export default function PatientTable({ pacientes, onDelete }) {
                             height: 32,
                             fontSize: "14px",
                           }}
-                        />
+                        >
+                          {/* Opcional: Colocar a primeira letra do nome aqui */}
+                        </Avatar>
 
                         <Typography sx={{ fontWeight: 500, color: "#1E293B" }}>
-                          {paciente.nomeCompleto}
+                          {paciente.nomeCompleto || paciente.nome || paciente.nome_completo}
                         </Typography>
                       </Box>
                     </TableCell>
