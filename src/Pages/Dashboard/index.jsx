@@ -94,15 +94,15 @@ export default function Dashboard() {
           startIcon={<AddIcon />}
           onClick={() => setIsOpenModal(true)}
           sx={{
-            bgcolor: "#16A34A",
+            bgcolor: "#007BFF",
             color: "#FFF",
             textTransform: "none",
             fontFamily: "Roboto, sans-serif",
             fontSize: "14px",
-            fontWeight: 600,
+            fontWeight: 500,
             borderRadius: "8px",
             px: 3,
-            "&:hover": { bgcolor: "#15803d" },
+            "&:hover": { bgcolor: "#0069D9", boxShadow: "none" },
           }}
         >
           Novo Paciente

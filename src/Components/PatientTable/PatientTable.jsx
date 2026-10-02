@@ -15,9 +15,12 @@ import { useState } from "react";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
+import { useNavigate } from "react-router-dom";
 
 export default function PatientTable({ pacientes, onDelete }) {
   const [termoPesquisa, setTermoPesquisa] = useState("");
+
+  const navigate = useNavigate()
 
   function calcularIdade(dataNascimento) {
     if (!dataNascimento) return "--";
@@ -61,7 +64,7 @@ export default function PatientTable({ pacientes, onDelete }) {
         >
           <OutlinedInput
             size="small"
-            placeholder="Pesquisar Paciente....."
+            placeholder="Buscar Paciente"
             value={termoPesquisa}
             onChange={(e) => setTermoPesquisa(e.target.value)}
             startAdornment={
@@ -192,6 +195,7 @@ export default function PatientTable({ pacientes, onDelete }) {
                           }
                           label="Estoque"
                           size="small"
+                          onClick={() => navigate(`/dashboard/estoque/${paciente.id}`)}
                           sx={{
                             backgroundColor: "#DBEAFE",
                             color: "#2563EB",

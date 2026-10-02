@@ -4,6 +4,7 @@ import Login from "../Pages/Login";
 import Notification from "../Pages/Notification";
 import Settings from "../Pages/Settings";
 import Dashboard from "../Pages/Dashboard";
+import EstoquePaciente from "../Pages/EstoquePaciente";
 import AdminLayout from "../layouts/AdminLayout";
 
 export default function AppRouter() {
@@ -18,6 +19,17 @@ export default function AppRouter() {
             <ProtectedRoute>
               <AdminLayout>
                 <Dashboard />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard/estoque/:id"
+          element={
+            <ProtectedRoute>
+              <AdminLayout>
+                <EstoquePaciente />
               </AdminLayout>
             </ProtectedRoute>
           }
