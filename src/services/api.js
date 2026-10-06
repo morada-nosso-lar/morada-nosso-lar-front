@@ -5,10 +5,9 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-axios.interceptors.request.use(
+api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -16,24 +15,21 @@ axios.interceptors.request.use(
 
     return config;
   },
-
   (erro) => {
     return Promise.reject(erro);
-  },
+  }
 );
 
-axios.interceptors.response.use(
+api.interceptors.response.use(
   (response) => {
     return response;
   },
-
   (error) => {
-    if (error.response && error.response.status == 401) {
+    if (error.response && error.response.status === 401) {
       localStorage.removeItem("token");
-
       window.location.href = "/login";
     }
 
     return Promise.reject(error);
-  },
+  }
 );
