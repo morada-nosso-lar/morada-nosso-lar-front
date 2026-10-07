@@ -5,7 +5,21 @@ import ItemTable from "../../Components/itemTable/itemTable";
 import ItemModal from "../../Components/itemModal/itemModal";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { IconButton, Box, Typography, Button } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Snackbar,
+  Typography,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import {
   getEstoque,
   createProduto,
@@ -22,6 +36,10 @@ export default function EstoquePaciente() {
   const [paciente, setPaciente] = useState(null);
   const [medicamentos, setMedicamentos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   // Carrega os dados do paciente e a lista global de produtos
   useEffect(() => {
@@ -103,6 +121,9 @@ export default function EstoquePaciente() {
       if (response && response.data) {
         setMedicamentos((prev) => [response.data, ...prev]);
       }
+      setSnackbarMessage("Medicamento cadastrado com sucesso");
+      setOpenSnackbar(true);
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Erro ao cadastrar produto:", error);
     }
@@ -126,15 +147,27 @@ export default function EstoquePaciente() {
     }
   };
 
-  // Função para deletar um item da tabela via API
-  const handleDeleteItem = async (itemId) => {
+  function handleDeleteItem(itemId) {
+    setItemToDelete(itemId);
+    setOpenDeleteDialog(true);
+  }
+
+  async function confirmDeleteProduto() {
     try {
-      await deleteProduto(itemId);
-      setMedicamentos((prev) => prev.filter((item) => item.id !== itemId));
+      await deleteProduto(itemToDelete);
+      setMedicamentos((prev) =>
+        prev.filter((item) => item.id !== itemToDelete),
+      );
+      setSnackbarMessage("Medicamento deletado com sucesso");
+      setOpenSnackbar(true);
     } catch (error) {
       console.error("Erro ao excluir produto:", error);
+      alert("Não foi possível excluir o produto.");
+    } finally {
+      setOpenDeleteDialog(false);
+      setItemToDelete(null);
     }
-  };
+  }
 
   return (
     <>
@@ -143,6 +176,8 @@ export default function EstoquePaciente() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          flexWrap: "wrap",
+          gap: 2,
           ml: "10px",
           mr: "10px",
           mt: "5px",
@@ -191,7 +226,11 @@ export default function EstoquePaciente() {
       </Box>
 
       {/* Cartão de perfil com dados dinâmicos do paciente */}
-      <PatientProfileCard paciente={paciente} loading={loading} />
+      <PatientProfileCard
+        paciente={paciente}
+        medicamentos={medicamentos}
+        loading={loading}
+      />
 
       {/* Tabela de itens conectada à API de estoque */}
       <ItemTable
@@ -205,6 +244,117 @@ export default function EstoquePaciente() {
         onClose={() => setIsModalOpen(false)}
         onItemCreated={handleAddItem}
       />
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        maxWidth="xs"
+        PaperProps={{ sx: { borderRadius: "12px" } }}
+      >
+        <DialogTitle
+          sx={{
+            display: "flex",
+            bgcolor: "#F7F7F7",
+            justifyContent: "space-between",
+            alignItems: "center",
+            borderBottom: "1px solid #E5E7EB",
+            m: 0,
+            p: "16px 24px",
+          }}
+        >
+          <Box sx={{ fontWeight: "bold", color: "#111827", fontSize: "18px" }}>
+            Excluir Medicamento
+          </Box>
+
+          <IconButton
+            onClick={() => setOpenDeleteDialog(false)}
+            sx={{
+              bgcolor: "#FEE2E2",
+              color: "#EF4444",
+              width: 28,
+              height: 28,
+              "&:hover": { bgcolor: "#FECACA" },
+            }}
+          >
+            <CloseIcon sx={{ fontSize: 16 }} />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            pt: "32px",
+            pb: "24px",
+          }}
+        >
+          <IconButton
+            disableRipple
+            sx={{
+              bgcolor: "#FEE2E2",
+              color: "#4B5563",
+              width: 56,
+              height: 56,
+              mb: "20px",
+              mt: "20px",
+              cursor: "default",
+            }}
+          >
+            <DeleteOutlineOutlinedIcon sx={{ width: 28, height: 28 }} />
+          </IconButton>
+
+          <DialogContentText
+            sx={{ textAlign: "center", fontSize: "14px", color: "#6B7280" }}
+          >
+            Tem certeza que deseja excluir este medicamento? Esta ação não
+            poderá ser desfeita.
+          </DialogContentText>
+        </DialogContent>
+
+        <DialogActions sx={{ padding: "0 24px 24px 24px", gap: "12px" }}>
+          <Button
+            onClick={() => setOpenDeleteDialog(false)}
+            sx={{
+              flex: 1,
+              color: "#4B5563",
+              textTransform: "none",
+              fontWeight: 500,
+              height: "40px",
+              "&:hover": { bgcolor: "transparent", color: "#111827" },
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={confirmDeleteProduto}
+            variant="contained"
+            sx={{
+              flex: 1,
+              textTransform: "none",
+              bgcolor: "#EF4444",
+              borderRadius: "8px",
+              fontWeight: 600,
+              height: "40px",
+              boxShadow: "none",
+              "&:hover": { bgcolor: "#DC2626", boxShadow: "none" },
+            }}
+          >
+            Excluir
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={5000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "left" }}
+      >
+        <Alert severity="success" sx={{ width: "100%", boxShadow: 3 }}>
+          <p>{snackbarMessage}</p>
+        </Alert>
+      </Snackbar>
     </>
   );
 }

@@ -8,23 +8,33 @@ import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import PersonIcon from "@mui/icons-material/Person";
 
-export default function PatientProfileCard({ paciente, loading }) {
+export default function PatientProfileCard({
+  paciente,
+  medicamentos = [],
+  loading,
+}) {
+  const criticosCount = medicamentos.filter(
+    (item) => Number(item.quantidade) <= 3,
+  ).length;
+  const hasCriticos = criticosCount > 0;
+
   return (
     <>
       <Paper
-        variant="outlined"
+        elevation={0}
         sx={{
           mt: "10px",
-          ml: "10px",
-          mr: "10px",
           mb: "30px",
-          p: "3px",
-          borderRadius: "12px",
+          p: 3,
+          borderRadius: "16px",
+          border: "1px solid #C4CEDB",
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.03)",
+          bgcolor: "#FFFFFF",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
-          gap: 2,
+          gap: 3,
           position: "relative",
         }}
       >
@@ -33,14 +43,12 @@ export default function PatientProfileCard({ paciente, loading }) {
             display: "flex",
             alignItems: "center",
             gap: 2,
-            mt: "10px",
-            mb: "10px",
-            ml: "10px",
+            flex: "1 1 auto",
           }}
         >
           <Avatar
             sx={{
-              bgcolor: "#007AFF",
+              bgcolor: "#0F4C81",
               width: 56,
               height: 56,
             }}
@@ -48,9 +56,21 @@ export default function PatientProfileCard({ paciente, loading }) {
             <PersonIcon sx={{ fontSize: "32px", color: "#FFF" }} />
           </Avatar>
 
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.5,
+              minWidth: 0,
+            }}
+          >
             <Typography
-              sx={{ fontSize: "16px", fontWeight: 500, color: "#1C1C1E" }}
+              sx={{
+                fontSize: "16px",
+                fontWeight: 500,
+                color: "#1C1C1E",
+                overflowWrap: "anywhere",
+              }}
             >
               {loading
                 ? "Carregando..."
@@ -58,11 +78,15 @@ export default function PatientProfileCard({ paciente, loading }) {
             </Typography>
 
             <Chip
-              label="Status: 2 Criticos"
+              label={
+                hasCriticos
+                  ? `Status: ${criticosCount} Crítico(s)`
+                  : "Status: Regular"
+              }
               size="small"
               sx={{
-                bgcolor: "#FEE2E2",
-                color: "#DC2626",
+                bgcolor: hasCriticos ? "#FEE2E2" : "#DCFCE7",
+                color: hasCriticos ? "#DC2626" : "#16A34A",
                 fontSize: "11px",
                 width: "fit-content",
                 height: "24px",
@@ -75,11 +99,10 @@ export default function PatientProfileCard({ paciente, loading }) {
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-end",
+            justifyContent: "flex-start",
             gap: 2,
             flexWrap: "wrap",
-            mt: "10px",
-            mb: "10px",
+            flex: "0 1 auto",
           }}
         >
           <Box
