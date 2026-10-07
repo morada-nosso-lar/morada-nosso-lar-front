@@ -1,4 +1,4 @@
-import { Avatar, Button, Paper, Chip } from "@mui/material";
+import { Avatar, Paper, Chip } from "@mui/material";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -7,9 +7,8 @@ import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import PersonIcon from "@mui/icons-material/Person";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
-export default function PatientProfileCard() {
+export default function PatientProfileCard({ paciente, loading }) {
   return (
     <>
       <Paper
@@ -18,11 +17,14 @@ export default function PatientProfileCard() {
           mt: "10px",
           ml: "10px",
           mr: "10px",
+          mb: "30px",
           p: "3px",
           borderRadius: "12px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          flexWrap: "wrap",
+          gap: 2,
           position: "relative",
         }}
       >
@@ -50,7 +52,9 @@ export default function PatientProfileCard() {
             <Typography
               sx={{ fontSize: "16px", fontWeight: 500, color: "#1C1C1E" }}
             >
-              Rogerio ceni
+              {loading
+                ? "Carregando..."
+                : paciente?.nome || "Paciente não encontrado"}
             </Typography>
 
             <Chip
@@ -67,9 +71,16 @@ export default function PatientProfileCard() {
           </Box>
         </Box>
 
-        {/* Margem direita aumentada para afastar o telefone do botão */}
         <Box
-          sx={{ display: "flex", gap: 3, mt: "10px", mb: "10px", mr: "100px" }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: 2,
+            flexWrap: "wrap",
+            mt: "10px",
+            mb: "10px",
+          }}
         >
           <Box
             sx={{
@@ -92,7 +103,11 @@ export default function PatientProfileCard() {
               <Typography
                 sx={{ fontSize: "13px", fontWeight: 500, color: "#1C1C1E" }}
               >
-                78 anos
+                {loading
+                  ? "--"
+                  : paciente?.idade
+                    ? `${paciente.idade} anos`
+                    : "Idade não informada"}
               </Typography>
             </Box>
           </Box>
@@ -115,7 +130,7 @@ export default function PatientProfileCard() {
               <Typography
                 sx={{ fontSize: "13px", fontWeight: 500, color: "#1C1C1E" }}
               >
-                000.000.000.-00
+                000.000.000-00
               </Typography>
             </Box>
           </Box>
@@ -143,22 +158,6 @@ export default function PatientProfileCard() {
             </Box>
           </Box>
         </Box>
-
-        <Button
-          startIcon={<EditOutlinedIcon />}
-          sx={{
-            position: "absolute",
-            top: "8px",
-            right: "10px",
-            color: "#6B7280",
-            textTransform: "none",
-            fontSize: "13px",
-            fontWeight: 500,
-            "&:hover": { bgcolor: "transparent", textDecoration: "underline" },
-          }}
-        >
-          Editar
-        </Button>
       </Paper>
     </>
   );
