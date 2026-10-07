@@ -55,7 +55,9 @@ export default function AdminLayout({ children }) {
               ml: "8px",
             }}
           >
-            <HomeOutlinedIcon sx={{ color: "#F8FAFC", width: "90px" }} />
+            <HomeOutlinedIcon
+              sx={{ color: "#F8FAFC", width: 24, height: 24 }}
+            />
           </Box>
 
           <Box className="text-header">

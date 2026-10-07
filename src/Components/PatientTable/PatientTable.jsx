@@ -60,6 +60,8 @@ export default function PatientTable({ pacientes, onDelete }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            flexWrap: { xs: "wrap", sm: "nowrap" },
+            gap: 2,
           }}
         >
           <OutlinedInput
@@ -75,7 +77,8 @@ export default function PatientTable({ pacientes, onDelete }) {
             sx={{
               bgcolor: "#F3F4F6",
               borderRadius: "8px",
-              width: "320px",
+              width: { xs: "100%", sm: "320px" },
+              minWidth: 0,
               "& fieldset": { borderColor: "#E5E7EB" },
               "&:hover fieldset": { borderColor: "#D1D5DB" },
               "&.Mui-focused fieldset": { borderColor: "#007BFF" },
@@ -89,8 +92,12 @@ export default function PatientTable({ pacientes, onDelete }) {
           </Typography>
         </Box>
 
-        <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 0, border: "none" }}>
-          <Table>
+        <TableContainer
+          component={Paper}
+          variant="outlined"
+          sx={{ width: "100%", maxWidth: "100%", borderRadius: 0, border: "none" }}
+        >
+          <Table sx={{ minWidth: 680 }}>
             <TableHead sx={{ backgroundColor: "#F8FAFC" }}>
               <TableRow>
                 <TableCell sx={{ color: "#64748B", fontWeight: "bold" }}>

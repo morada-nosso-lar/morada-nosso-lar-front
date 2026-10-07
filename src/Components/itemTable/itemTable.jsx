@@ -15,24 +15,24 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
   return (
     <Box
       sx={{
-        width: "calc(100% - 20px)",
+        width: "100%",
         maxWidth: "100%",
         minWidth: 0,
-        mx: "10px",
         boxSizing: "border-box",
       }}
     >
       <Paper
-        variant="outlined"
+        elevation={0}
         sx={{
           width: "100%",
           maxWidth: "100%",
           minWidth: 0,
           boxSizing: "border-box",
-          borderRadius: "10px",
-          borderColor: "#C4CEDB",
+          borderRadius: "16px",
+          border: "1px solid #C4CEDB",
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.03)",
           overflow: "hidden",
-          bgcolor: "#FFF",
+          bgcolor: "#FFFFFF",
         }}
       >
         {/* Cabeçalho da Tabela com Contador Dinâmico */}
@@ -45,7 +45,7 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
             alignItems: "center",
           }}
         >
-          <Typography sx={{ fontWeight: 600, color: "#1E293B" }}>
+          <Typography sx={{ minWidth: 0, fontWeight: 600, color: "#1E293B" }}>
             Medicamentos / Produtos
           </Typography>
 
@@ -62,7 +62,7 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
           variant="outlined"
           sx={{ width: "100%", maxWidth: "100%", borderRadius: 0, border: "none" }}
         >
-          <Table>
+          <Table sx={{ minWidth: 600 }}>
             <TableHead sx={{ backgroundColor: "#F8FAFC" }}>
               <TableRow>
                 <TableCell

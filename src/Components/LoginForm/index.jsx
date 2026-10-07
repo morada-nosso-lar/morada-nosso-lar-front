@@ -69,7 +69,8 @@ export default function LoginForm() {
       <Box
         sx={{
           backgroundColor: "#FFF",
-          width: "400px",
+          width: { xs: "calc(100vw - 32px)", sm: "400px" },
+          maxWidth: "100%",
           padding: 4,
           borderRadius: 4,
           boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",

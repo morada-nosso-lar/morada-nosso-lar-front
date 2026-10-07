@@ -6,6 +6,7 @@ import DashboardCard from "../../Components/DashboardCard/DashboardCard";
 import PatientTable from "../../Components/PatientTable/PatientTable";
 import PatientModal from "../../Components/PatientModal/PatientModal";
 import { getPacientes, deletePaciente } from "../../services/pacientes";
+import { getEstoque } from "../../services/estoque";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { useEffect, useState } from "react";
@@ -20,18 +21,27 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 
 export default function Dashboard() {
   const [pacientes, setpacientes] = useState([]);
+  const [estoque, setEstoque] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState(null);
 
   useEffect(() => {
     async function carregar() {
       try {
-        const resposta = await getPacientes();
+        const [resposta, respostaEstoque] = await Promise.all([
+          getPacientes(),
+          getEstoque(),
+        ]);
 
         if (resposta.success) {
           setpacientes(resposta.data);
         }
+        const listaEstoque = Array.isArray(respostaEstoque)
+          ? respostaEstoque
+          : respostaEstoque?.data;
+        setEstoque(Array.isArray(listaEstoque) ? listaEstoque : []);
       } catch (error) {
         console.error("erro ao carregar dados do paciente", error);
       }
@@ -52,6 +62,8 @@ export default function Dashboard() {
       setpacientes((pacientesAntigos) =>
         pacientesAntigos.filter((paciente) => paciente.id !== patientToDelete),
       );
+      setSnackbarMessage("Paciente deletado com sucesso");
+      setOpenSnackbar(true);
     } catch (error) {
       console.error("Erro ao excluir paciente:", error);
       alert("Não foi possível excluir o paciente.");
@@ -63,13 +75,10 @@ export default function Dashboard() {
 
   const totalPacientes = pacientes.length;
 
-  const totalMedicamentos = pacientes.reduce(
-    (total, paciente) => total + paciente.medicamentos,
-    0,
-  );
+  const totalMedicamentos = estoque.length;
 
-  const alertasCriticos = pacientes.filter(
-    (paciente) => paciente.status === "critico",
+  const alertasCriticos = estoque.filter(
+    (item) => Number(item.quantidade) <= 3,
   ).length;
 
   const [IsOpenModal, setIsOpenModal] = useState(false);
@@ -79,6 +88,7 @@ export default function Dashboard() {
       const resposta = await getPacientes();
       if (resposta.success) {
         setpacientes(resposta.data);
+        setSnackbarMessage("Novo Paciente cadastrado");
         setOpenSnackbar(true);
       }
     } catch (error) {
@@ -109,9 +119,15 @@ export default function Dashboard() {
         </Button>
       </Box>
 
-      <Box sx={{ display: "flex", gap: 3 }}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
+          gap: 3,
+        }}
+      >
         <DashboardCard title="Pacientes" value={totalPacientes} />
-        <DashboardCard title="Medicamentos" value={0} />
+        <DashboardCard title="Medicamentos" value={totalMedicamentos} />
         <DashboardCard title="Alertas Críticos" value={alertasCriticos} />
       </Box>
 
@@ -233,7 +249,7 @@ export default function Dashboard() {
         anchorOrigin={{ vertical: "top", horizontal: "left" }}
       >
         <Alert severity="success" sx={{ width: "100%", boxShadow: 3 }}>
-          <p>Novo Paciente cadastrado</p>
+          <p>{snackbarMessage}</p>
         </Alert>
       </Snackbar>
     </>
