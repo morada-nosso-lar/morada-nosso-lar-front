@@ -17,13 +17,19 @@ import { useForm } from "react-hook-form";
 import { loginSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Alert from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar"; 
+import Snackbar from "@mui/material/Snackbar";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [loginError, setLoginError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "error",
+  });
 
   const { signIn } = useContext(AuthContext);
 
@@ -41,26 +47,25 @@ export default function LoginForm() {
     if (reason === "clickaway") {
       return;
     }
-    setLoginError("");
+    setSnackbar((current) => ({ ...current, open: false }));
   };
 
   const onSubmit = async (data) => {
-    setLoginError("");
+    setLoading(true);
+    setSnackbar((current) => ({ ...current, open: false }));
 
     try {
       await signIn(data.email, data.senha);
-      console.log("Sucesso! Bem vindo!");
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
-
-      if (error.response) {
-        setLoginError(
-          "Dados de login inválidos. Verifique seu e-mail e senha.",
-        );
-      } else {
-        setLoginError("Servidor indisponível no momento.");
-      }
+      setSnackbar({
+        open: true,
+        message: "Email ou senha incorretos",
+        severity: "error",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -175,8 +180,12 @@ export default function LoginForm() {
 
           <Button
             type="submit"
+            disabled={loading}
             sx={{
-              display: "block",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 1,
               margin: "0 auto",
               height: "40px",
               width: "80%",
@@ -189,24 +198,36 @@ export default function LoginForm() {
               "&:hover": {
                 bgcolor: "#1565C0",
               },
+              "&.Mui-disabled": {
+                bgcolor: "#1976D2",
+                color: "#fff",
+                opacity: 0.8,
+              },
             }}
           >
-            Entrar
+            {loading ? (
+              <>
+                <CircularProgress size={24} color="inherit" />
+                Validando...
+              </>
+            ) : (
+              "Entrar"
+            )}
           </Button>
         </form>
 
         <Snackbar
-          open={!!loginError}
+          open={snackbar.open}
           autoHideDuration={5000}
           onClose={handleCloseSnackbar}
           anchorOrigin={{ vertical: "top", horizontal: "left" }}
         >
           <Alert
             onClose={handleCloseSnackbar}
-            severity="error"
+            severity={snackbar.severity}
             sx={{ width: "100%", boxShadow: 3 }}
           >
-            {loginError}
+            {snackbar.message}
           </Alert>
         </Snackbar>
       </Box>
