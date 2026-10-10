@@ -7,13 +7,6 @@ Interface web do sistema de **gestão de cuidadores e controle de estoque de sup
 
 https://github.com/user-attachments/assets/567a0c2a-9af1-405e-bc5f-9211b9656b74
 
-## 🛠️ Tecnologias Utilizadas
-
-* **Framework:** [React.js](https://react.dev/)
-* **Build Tool:** [Vite](https://vitejs.dev/)
-* **Estilização:** [Tailwind CSS](https://tailwindcss.com/)
-* **Consumo de API:** Axios / TanStack Query / Fetch
-
 ---
 
 ## 🚀 Pré-requisitos
