@@ -119,6 +119,3 @@ Este projeto foi desenvolvido como parte da disciplina **Itinerário Extensionis
 ---
 
 
-## 📄 Licença
-
-Este projeto foi desenvolvido para fins **acadêmicos e educacionais**, no âmbito da disciplina Itinerário Extensionista II.
