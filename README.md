@@ -1,4 +1,4 @@
-# 🏥 Morada Nosso Lar — Frontend
+# Morada Nosso Lar — Frontend
 
 Interface web do sistema de **gestão de cuidadores e controle de estoque de suprimentos e medicamentos** para a instituição **Morada Nosso Lar**, desenvolvido no âmbito da disciplina **Itinerário Extensionista II**.
 
@@ -65,29 +65,6 @@ http://localhost:5173
 
 ---
 
-## 📁 Estrutura de Pastas
-
-A estrutura principal do projeto está organizada da seguinte forma:
-
-```text
-src/
-├── assets/          # Imagens, ícones e arquivos estáticos globais
-├── components/      # Componentes de UI reutilizáveis
-├── pages/           # Telas completas da aplicação
-├── services/        # Configurações e serviços de conexão com a API
-└── routes/          # Definição das rotas da aplicação
-```
-
-### 📂 Principais diretórios
-
-| Diretório     | Descrição                                        |
-| ------------- | ------------------------------------------------ |
-| `assets/`     | Imagens, ícones e outros arquivos estáticos      |
-| `components/` | Componentes reutilizáveis da interface           |
-| `pages/`      | Páginas e telas da aplicação                     |
-| `services/`   | Serviços responsáveis pela comunicação com a API |
-| `routes/`     | Configuração das rotas da aplicação              |
-
 ---
 
 ## 📌 Funcionalidades
@@ -141,19 +118,6 @@ Este projeto foi desenvolvido como parte da disciplina **Itinerário Extensionis
 
 ---
 
-## 👨‍💻 Desenvolvimento
-
-Projeto desenvolvido utilizando tecnologias modernas do ecossistema **JavaScript/React**, com foco em:
-
-* Componentização
-* Reutilização de código
-* Consumo de APIs REST
-* Gerenciamento de dados assíncronos
-* Responsividade
-* Organização e manutenção do código
-* Experiência do usuário (UX)
-
----
 
 ## 📄 Licença
 
