@@ -11,7 +11,11 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
-export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantidade }) {
+export default function ItemTable({
+  medicamentos = [],
+  onDelete,
+  onUpdateQuantidade,
+}) {
   return (
     <Box
       sx={{
@@ -30,7 +34,7 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
           boxSizing: "border-box",
           borderRadius: "16px",
           border: "1px solid #C4CEDB",
-          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.03)",
+          boxShadow: "0 4px 16px rgba(15, 35, 65, 0.04)",
           overflow: "hidden",
           bgcolor: "#FFFFFF",
         }}
@@ -38,11 +42,13 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
         {/* Cabeçalho da Tabela com Contador Dinâmico */}
         <Box
           sx={{
-            p: "16px 24px",
+            px: { xs: 2, sm: 3 },
+            py: 2,
             display: "flex",
-            borderBottom: "1px solid #E2E8F0",
             justifyContent: "space-between",
             alignItems: "center",
+            gap: 2,
+            borderBottom: "1px solid #E2E8F0",
           }}
         >
           <Typography sx={{ minWidth: 0, fontWeight: 600, color: "#1E293B" }}>
@@ -50,9 +56,14 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
           </Typography>
 
           <Typography
-            sx={{ color: "#6B7280", fontSize: "14px", fontWeight: 500 }}
+            sx={{
+              color: "#64748B",
+              fontSize: "14px",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+            }}
           >
-            {medicamentos.length} items
+            {medicamentos.length} {medicamentos.length === 1 ? "item" : "itens"}
           </Typography>
         </Box>
 
@@ -60,28 +71,67 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
         <TableContainer
           component={Paper}
           variant="outlined"
-          sx={{ width: "100%", maxWidth: "100%", borderRadius: 0, border: "none" }}
+          sx={{
+            width: "100%",
+            maxWidth: "100%",
+            borderRadius: 0,
+            border: "none",
+          }}
         >
           <Table sx={{ minWidth: 600 }}>
             <TableHead sx={{ backgroundColor: "#F8FAFC" }}>
               <TableRow>
                 <TableCell
-                  sx={{ color: "#64748B", fontWeight: "bold", fontSize: "12px" }}
+                  sx={{
+                    py: 1.75,
+                    px: 2.5,
+                    bgcolor: "#F8FAFC",
+                    color: "#64748B",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    letterSpacing: "0.3px",
+                    borderBottom: "1px solid #E2E8F0",
+                    whiteSpace: "nowrap",
+                  }}
                 >
                   MEDICAMENTO
                 </TableCell>
                 <TableCell
-                  sx={{ color: "#64748B", fontWeight: "bold", fontSize: "12px" }}
+                  sx={{
+                    py: 1.75,
+                    px: 2.5,
+                    bgcolor: "#F8FAFC",
+                    color: "#64748B",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    letterSpacing: "0.3px",
+                    borderBottom: "1px solid #E2E8F0",
+                    whiteSpace: "nowrap",
+                  }}
                 >
                   CATEGORIA
                 </TableCell>
                 <TableCell
-                  sx={{ color: "#64748B", fontWeight: "bold", fontSize: "12px" }}
+                  sx={{
+                    py: 1.75,
+                    px: 2.5,
+                    bgcolor: "#F8FAFC",
+                    color: "#64748B",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    letterSpacing: "0.3px",
+                    borderBottom: "1px solid #E2E8F0",
+                    whiteSpace: "nowrap",
+                  }}
                 >
                   QUANTIDADE
                 </TableCell>
                 <TableCell
-                  sx={{ color: "#64748B", fontWeight: "bold", fontSize: "12px" }}
+                  sx={{
+                    color: "#64748B",
+                    fontWeight: "bold",
+                    fontSize: "12px",
+                  }}
                 >
                   AÇÕES
                 </TableCell>
@@ -91,7 +141,11 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
             <TableBody>
               {medicamentos.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} align="center" sx={{ py: 4, color: "#6B7280" }}>
+                  <TableCell
+                    colSpan={4}
+                    align="center"
+                    sx={{ py: 4, color: "#6B7280" }}
+                  >
                     Nenhum item cadastrado no estoque.
                   </TableCell>
                 </TableRow>
@@ -101,7 +155,19 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
                   const isCritico = item.quantidade <= 2;
 
                   return (
-                    <TableRow key={item.id} hover>
+                    <TableRow
+                      key={item.id}
+                      hover
+                      sx={{
+                        "&:hover": {
+                          bgcolor: "#F8FAFC",
+                        },
+                        "&:last-child td": {
+                          borderBottom: 0,
+                        },
+                        transition: "background-color 0.2s ease",
+                      }}
+                    >
                       <TableCell>
                         <Typography
                           sx={{
@@ -135,6 +201,19 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
                           }}
                         >
                           <IconButton
+                            sx={{
+                              width: 32,
+                              height: 32,
+                              borderRadius: "8px",
+                              color: "#64748B",
+                              "&:hover": {
+                                bgcolor: "#EAF2FF",
+                                color: "#1976D2",
+                              },
+                              "&.Mui-disabled": {
+                                color: "#CBD5E1",
+                              },
+                            }}
                             size="small"
                             aria-label={`Diminuir quantidade de ${item.nome}`}
                             disabled={item.quantidade === 0}
@@ -153,6 +232,19 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
                             {item.quantidade} unid.
                           </Typography>
                           <IconButton
+                            sx={{
+                              width: 32,
+                              height: 32,
+                              borderRadius: "8px",
+                              color: "#64748B",
+                              "&:hover": {
+                                bgcolor: "#EAF2FF",
+                                color: "#1976D2",
+                              },
+                              "&.Mui-disabled": {
+                                color: "#CBD5E1",
+                              },
+                            }}
                             size="small"
                             aria-label={`Aumentar quantidade de ${item.nome}`}
                             onClick={() =>
@@ -166,12 +258,27 @@ export default function ItemTable({ medicamentos = [], onDelete, onUpdateQuantid
 
                       <TableCell>
                         <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5,
+                          }}
                         >
-                          {/* Botão de Excluir integrado com a API */}
+                          
                           <IconButton
                             size="small"
-                            sx={{ color: "#94A3B8", ml: 1 }}
+                            aria-label={`Excluir ${item.nome}`}
+                            title={`Excluir ${item.nome}`}
+                            sx={{
+                              width: 32,
+                              height: 32,
+                              borderRadius: "8px",
+                              color: "#94A3B8",
+                              "&:hover": {
+                                bgcolor: "#FEF2F2",
+                                color: "#DC2626",
+                              },
+                            }}
                             onClick={() => onDelete(item.id)}
                           >
                             <DeleteOutlinedIcon fontSize="small" />
