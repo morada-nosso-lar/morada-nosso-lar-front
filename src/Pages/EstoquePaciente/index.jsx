@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import PatientProfileCard from "../../Components/PatientProfileCard/PatientProfileCard";
 import ItemTable from "../../Components/itemTable/itemTable";
 import ItemModal from "../../Components/itemModal/itemModal";
+import PatientModal from "../../Components/PatientModal/PatientModal";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
@@ -33,6 +34,8 @@ export default function EstoquePaciente() {
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [pacienteEmEdicao, setPacienteEmEdicao] = useState(null);
   const [paciente, setPaciente] = useState(null);
   const [medicamentos, setMedicamentos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,6 +43,7 @@ export default function EstoquePaciente() {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   // Carrega os dados do paciente e a lista global de produtos
   useEffect(() => {
@@ -91,9 +95,9 @@ export default function EstoquePaciente() {
         setPaciente({ nome: "Paciente Provisório", idade: 0 }); 
       }
 
-      // 2. Busca do Estoque Global (Isolada)
+      // 2. Busca o estoque do paciente
       try {
-        const respostaEstoque = await getEstoque();
+        const respostaEstoque = await getEstoque(id);
 
         // Verifica se o serviço já enviou o array ou se ainda está dentro do objeto original
         const listaMedicamentos = Array.isArray(respostaEstoque)
@@ -113,15 +117,58 @@ export default function EstoquePaciente() {
     }
   }, [id]);
 
+  const handlePatientUpdated = async () => {
+    try {
+      const respostaPacientes = await getPacientes();
+      const listaPacientes = Array.isArray(respostaPacientes)
+        ? respostaPacientes
+        : respostaPacientes?.data || [];
+      const pacienteAtualizado = listaPacientes.find(
+        (p) => String(p.id) === String(id),
+      );
+
+      if (pacienteAtualizado) {
+        const nascimento = pacienteAtualizado.dataNascimento
+          ? new Date(pacienteAtualizado.dataNascimento)
+          : null;
+        let idade = 0;
+
+        if (nascimento && !Number.isNaN(nascimento.getTime())) {
+          const hoje = new Date();
+          idade = hoje.getFullYear() - nascimento.getFullYear();
+          const mes = hoje.getMonth() - nascimento.getMonth();
+
+          if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+            idade--;
+          }
+        }
+
+        setPaciente({
+          ...pacienteAtualizado,
+          nome: pacienteAtualizado.nomeCompleto || pacienteAtualizado.nome,
+          idade,
+        });
+        setSnackbarMessage("Paciente atualizado com sucesso");
+        setOpenSnackbar(true);
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar os dados do paciente na tela:", error);
+    }
+  };
+
   // Função chamada ao submeter o modal de criação de item/produto
   const handleAddItem = async (novoItemData) => {
     try {
-      const response = await createProduto(novoItemData);
+      const response = await createProduto({
+        ...novoItemData,
+        paciente_id: id,
+      });
       // O back-end retorna o produto criado dentro de response.data
       if (response && response.data) {
         setMedicamentos((prev) => [response.data, ...prev]);
       }
       setSnackbarMessage("Medicamento cadastrado com sucesso");
+      setSnackbarSeverity("success");
       setOpenSnackbar(true);
       setIsModalOpen(false);
     } catch (error) {
@@ -142,8 +189,16 @@ export default function EstoquePaciente() {
             : item
         )
       );
+      setSnackbarSeverity("success");
     } catch (error) {
       console.error("Erro ao atualizar quantidade do produto:", error);
+      setSnackbarMessage(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível atualizar a quantidade do produto.",
+      );
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
     }
   };
 
@@ -159,6 +214,7 @@ export default function EstoquePaciente() {
         prev.filter((item) => item.id !== itemToDelete),
       );
       setSnackbarMessage("Medicamento deletado com sucesso");
+      setSnackbarSeverity("success");
       setOpenSnackbar(true);
     } catch (error) {
       console.error("Erro ao excluir produto:", error);
@@ -230,6 +286,10 @@ export default function EstoquePaciente() {
         paciente={paciente}
         medicamentos={medicamentos}
         loading={loading}
+        onEditClick={() => {
+          setPacienteEmEdicao(paciente);
+          setIsEditModalOpen(true);
+        }}
       />
 
       {/* Tabela de itens conectada à API de estoque */}
@@ -243,6 +303,16 @@ export default function EstoquePaciente() {
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onItemCreated={handleAddItem}
+      />
+
+      <PatientModal
+        open={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setPacienteEmEdicao(null);
+        }}
+        pacienteParaEditar={pacienteEmEdicao}
+        onPatientUpdated={handlePatientUpdated}
       />
 
       <Dialog
@@ -351,7 +421,7 @@ export default function EstoquePaciente() {
         onClose={() => setOpenSnackbar(false)}
         anchorOrigin={{ vertical: "top", horizontal: "left" }}
       >
-        <Alert severity="success" sx={{ width: "100%", boxShadow: 3 }}>
+        <Alert severity={snackbarSeverity} sx={{ width: "100%", boxShadow: 3 }}>
           <p>{snackbarMessage}</p>
         </Alert>
       </Snackbar>

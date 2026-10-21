@@ -62,7 +62,7 @@ export default function Dashboard() {
       setpacientes((pacientesAntigos) =>
         pacientesAntigos.filter((paciente) => paciente.id !== patientToDelete),
       );
-      setSnackbarMessage("Paciente deletado com sucesso");
+      setSnackbarMessage("Paciente desativado com sucesso");
       setOpenSnackbar(true);
     } catch (error) {
       console.error("Erro ao excluir paciente:", error);
@@ -75,9 +75,20 @@ export default function Dashboard() {
 
   const totalPacientes = pacientes.length;
 
-  const totalMedicamentos = estoque.length;
+  const idsPacientesAtivos = new Set(
+    pacientes.map((paciente) => String(paciente.id)),
+  );
+  const estoqueConsiderado = estoque.filter((item) => {
+    const pacienteId = item.pacienteId ?? item.paciente_id;
+    return (
+      pacienteId == null ||
+      idsPacientesAtivos.has(String(pacienteId))
+    );
+  });
 
-  const alertasCriticos = estoque.filter(
+  const totalMedicamentos = estoqueConsiderado.length;
+
+  const alertasCriticos = estoqueConsiderado.filter(
     (item) => Number(item.quantidade) <= 3,
   ).length;
 
@@ -132,7 +143,11 @@ export default function Dashboard() {
       </Box>
 
       <Box sx={{ mt: "40px" }}>
-        <PatientTable pacientes={pacientes} onDelete={handleDelete} />
+        <PatientTable
+          pacientes={pacientes}
+          estoque={estoque}
+          onDelete={handleDelete}
+        />
       </Box>
 
       <PatientModal
@@ -159,7 +174,7 @@ export default function Dashboard() {
           }}
         >
           <Box sx={{ fontWeight: "bold", color: "#111827", fontSize: "18px" }}>
-            Excluir Paciente
+            Desativar Paciente
           </Box>
 
           <IconButton
@@ -203,8 +218,7 @@ export default function Dashboard() {
           <DialogContentText
             sx={{ textAlign: "center", fontSize: "14px", color: "#6B7280" }}
           >
-            Tem certeza que deseja excluir este paciente? Esta ação não poderá
-            ser desfeita.
+            Tem certeza de que deseja desativar este paciente? O perfil e todo o seu histórico médico serão arquivados com segurança no sistema
           </DialogContentText>
         </DialogContent>
 
@@ -236,7 +250,7 @@ export default function Dashboard() {
               "&:hover": { bgcolor: "#DC2626", boxShadow: "none" },
             }}
           >
-            Excluir
+            Desativar
           </Button>
         </DialogActions>
       </Dialog>

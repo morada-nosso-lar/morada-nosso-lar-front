@@ -8,14 +8,20 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import FormHelperText from "@mui/material/FormHelperText";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import { CATEGORIAS_PRODUTO } from "../../services/estoque";
 
 const ItemModalSchema = z.object({
   nome: z.string().min(1, "O Nome do medicamento é obrigatório"),
-  categoria: z.string().min(1, "A Categoria é obrigatória"),
+  categoria: z.string().refine(
+    (categoria) => CATEGORIAS_PRODUTO.includes(categoria),
+    "Selecione uma categoria válida",
+  ),
   quantidade: z.coerce
     .number()
     .min(0, "A quantidade não pode ser negativa"),
@@ -24,6 +30,7 @@ const ItemModalSchema = z.object({
 
 export default function ItemModal({ open, onClose, onItemCreated }) {
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -32,6 +39,7 @@ export default function ItemModal({ open, onClose, onItemCreated }) {
     resolver: zodResolver(ItemModalSchema),
     defaultValues: {
       quantidade: 1,
+      categoria: "",
       descricao: "",
     },
   });
@@ -146,17 +154,32 @@ export default function ItemModal({ open, onClose, onItemCreated }) {
               >
                 Categoria
               </InputLabel>
-              <OutlinedInput
-                fullWidth
-                placeholder="Ex: Cardíaco"
-                size="small"
-                error={!!errors.categoria}
-                sx={{
-                  borderRadius: "8px",
-                  bgcolor: "#F3F4F6",
-                  "& fieldset": { borderColor: "#E5E7EB" },
-                }}
-                {...register("categoria")}
+              <Controller
+                name="categoria"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    fullWidth
+                    size="small"
+                    error={!!errors.categoria}
+                    displayEmpty
+                    sx={{
+                      borderRadius: "8px",
+                      bgcolor: "#F3F4F6",
+                      "& fieldset": { borderColor: "#E5E7EB" },
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Selecione uma categoria
+                    </MenuItem>
+                    {CATEGORIAS_PRODUTO.map((categoria) => (
+                      <MenuItem key={categoria} value={categoria}>
+                        {categoria}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
               />
               {errors?.categoria && (
                 <FormHelperText error sx={{ marginLeft: "5px" }}>

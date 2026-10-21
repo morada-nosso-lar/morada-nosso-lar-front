@@ -12,22 +12,35 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
 import SettingsIcon from "@mui/icons-material/Settings";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import PeopleIcon from "@mui/icons-material/People";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
-import { AuthContext } from "../contexts/AuthContext";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { AuthContext } from "../contexts/AuthContext";
+import logo from "../assets/Img/LOGO.png";
+
+const DRAWER_WIDTH = 260;
 
 export default function AdminLayout({ children }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signOut } = useContext(AuthContext);
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const menuItems = [
+    { text: "Pacientes", icon: <PeopleIcon />, path: "/dashboard" },
+    {
+      text: "Notificações",
+      icon: <NotificationsIcon />,
+      path: "/notification",
+    },
+    { text: "Configurações", icon: <SettingsIcon />, path: "/settings" },
+  ];
 
   const navigateTo = (path) => {
     navigate(path);
@@ -35,134 +48,191 @@ export default function AdminLayout({ children }) {
   };
 
   const drawerContent = (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <Box sx={{ flexGrow: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        bgcolor: "#0A192F",
+        color: "#F8FAFC",
+        px: 2,
+        py: 2.5,
+      }}
+    >
+      {/* Header do App / Logótipo */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          px: 1,
+          mb: 3,
+        }}
+      >
+        {/* Renderização dimensionada do Logótipo */}
         <Box
-          className="header"
-          sx={{ display: "flex", mt: "20px", mb: "10px" }}
-        >
-          <Box
-            className="icon"
+          component="img"
+          src={logo}
+          alt="Logótipo Morada Nosso Lar"
+          sx={{
+            width: 50,
+            height: 50,
+            objectFit: "contain",
+            borderRadius: "8px",
+            flexShrink: 0,
+          }}
+        />
+
+        <Box sx={{ overflow: "hidden" }}>
+          <Typography
+            variant="subtitle1"
             sx={{
-              backgroundColor: "#1976D2",
-              borderRadius: "8px",
-              width: 40,
-              height: 40,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              mr: "12px",
-              ml: "8px",
+              fontWeight: 700,
+              color: "#FFFFFF",
+              fontSize: "15px",
+              lineHeight: 1.2,
+              letterSpacing: "-0.2px",
             }}
           >
-            <HomeOutlinedIcon
-              sx={{ color: "#F8FAFC", width: 24, height: 24 }}
-            />
-          </Box>
+            Morada Nosso Lar
+          </Typography>
 
-          <Box className="text-header">
-            <Typography
-              variant="subtitle1"
-              component="h1"
-              sx={{ fontWeight: "bold", color: "#1E293B" }}
-            >
-              Morada Nosso Lar
-            </Typography>
-
-            <Typography
-              sx={{ color: "#7F8C8D", fontSize: "12px", mt: "-6px" }}
-            >
-              Gestão de Medicamentos
-            </Typography>
-          </Box>
+          <Typography
+            sx={{
+              color: "#94A3B8",
+              fontSize: "11px",
+              fontWeight: 500,
+              mt: 0.3,
+            }}
+          >
+            Gestão de Medicamentos
+          </Typography>
         </Box>
+      </Box>
 
-        <Divider />
+      <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.08)", mb: 2 }} />
 
-        <List>
-          <ListItem disablePadding>
-            <ListItemButton
-              onClick={() => navigateTo("/dashboard")}
-              sx={{ borderRadius: "8px", transition: "all 0.3s ease" }}
-            >
-              <ListItemIcon>
-                <PeopleIcon />
-              </ListItemIcon>
-              <ListItemText>Pacientes</ListItemText>
-            </ListItemButton>
-          </ListItem>
+      {/* Navegação Principal */}
+      <Box sx={{ flexGrow: 1 }}>
+        <List sx={{ p: 0, display: "flex", flexDirection: "column", gap: 0.8 }}>
+          {menuItems.map((item) => {
+            const isActive =
+              location.pathname === item.path ||
+              (item.path !== "/dashboard" &&
+                location.pathname.startsWith(item.path));
 
-          <ListItem disablePadding>
-            <ListItemButton
-              onClick={() => navigateTo("/notification")}
-              sx={{ borderRadius: "8px", transition: "all 0.3s ease" }}
-            >
-              <ListItemIcon>
-                <NotificationsIcon />
-              </ListItemIcon>
-              <ListItemText>Notificações</ListItemText>
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
-            <ListItemButton
-              onClick={() => navigateTo("/settings")}
-              sx={{ borderRadius: "8px", transition: "all 0.3s ease" }}
-            >
-              <ListItemIcon>
-                <SettingsIcon />
-              </ListItemIcon>
-              <ListItemText>Configurações</ListItemText>
-            </ListItemButton>
-          </ListItem>
+            return (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton
+                  onClick={() => navigateTo(item.path)}
+                  sx={{
+                    borderRadius: "10px",
+                    py: 1.2,
+                    px: 1.5,
+                    bgcolor: isActive
+                      ? "rgba(0, 123, 255, 0.15)"
+                      : "transparent",
+                    color: isActive ? "#FFF" : "#94A3B8",
+                    borderLeft: isActive
+                      ? "3px solid #FFF"
+                      : "3px solid transparent",
+                    transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                      bgcolor: isActive
+                        ? "rgba(0, 123, 255, 0.2)"
+                        : "rgba(255, 255, 255, 0.05)",
+                      color: isActive ? "#FFF" : "#F8FAFC",
+                      "& .MuiListItemIcon-root": {
+                        color: isActive ? "#FFF" : "#F8FAFC",
+                        transform: "translateX(3px)",
+                      },
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      color: isActive ? "#FFF" : "#94A3B8",
+                      minWidth: "36px",
+                      transition: "transform 0.2s ease, color 0.2s ease",
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontSize: "14px",
+                      fontWeight: isActive ? 600 : 500,
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
         </List>
       </Box>
 
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton
-            onClick={() => {
-              setMobileOpen(false);
-              signOut();
-            }}
-            sx={{
-              mx: 2,
-              mb: 2,
-              borderRadius: "8px",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                color: "#DC2626",
-                "& .MuiListItemIcon-root": {
-                  color: "#DC2626",
-                },
+      {/* Rodapé - Botão de Sair */}
+      <Box sx={{ pt: 2, borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
+        <ListItemButton
+          onClick={() => {
+            setMobileOpen(false);
+            signOut();
+          }}
+          sx={{
+            borderRadius: "10px",
+            py: 1.2,
+            px: 1.5,
+            color: "#94A3B8",
+            transition: "all 0.2s ease",
+            "&:hover": {
+              bgcolor: "rgba(239, 68, 68, 0.12)",
+              color: "#EF4444",
+              "& .MuiListItemIcon-root": {
+                color: "#EF4444",
               },
+            },
+          }}
+        >
+          <ListItemIcon sx={{ color: "#94A3B8", minWidth: "36px" }}>
+            <LogoutIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText
+            primary="Sair"
+            primaryTypographyProps={{
+              fontSize: "14px",
+              fontWeight: 500,
             }}
-          >
-            <ListItemIcon>
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText>Sair</ListItemText>
-          </ListItemButton>
-        </ListItem>
-      </List>
+          />
+        </ListItemButton>
+      </Box>
     </Box>
   );
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", width: "100%" }}>
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        width: "100%",
+        bgcolor: "#F8FAFC",
+      }}
+    >
       <Drawer
         variant={isDesktop ? "permanent" : "temporary"}
         open={isDesktop || mobileOpen}
         onClose={() => setMobileOpen(false)}
         ModalProps={{ keepMounted: true }}
         sx={{
-          width: isDesktop ? 250 : undefined,
+          width: isDesktop ? DRAWER_WIDTH : undefined,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: 250,
+            width: DRAWER_WIDTH,
             boxSizing: "border-box",
-            backgroundColor: "#F5F5F5 !important",
-            color: "#000",
+            borderRight: "1px solid #E2E8F0",
+            backgroundColor: "#0A192F",
+            borderTopRightRadius: "20px",
+            borderBottomRightRadius: "20px",
           },
         }}
       >
@@ -173,7 +243,7 @@ export default function AdminLayout({ children }) {
         component="main"
         sx={{
           flexGrow: 1,
-          width: { xs: "100%", md: "calc(100% - 250px)" },
+          width: { xs: "100%", md: `calc(100% - ${DRAWER_WIDTH}px)` },
           minWidth: 0,
           overflowX: "hidden",
         }}
@@ -190,7 +260,7 @@ export default function AdminLayout({ children }) {
             <IconButton
               aria-label="Abrir menu"
               onClick={() => setMobileOpen(true)}
-              sx={{ mb: 1 }}
+              sx={{ mb: 1, color: "#1E293B" }}
             >
               <MenuIcon />
             </IconButton>

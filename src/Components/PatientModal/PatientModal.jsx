@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -11,38 +12,112 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { PatientModalSchema } from "./schema";
 import { maskCPF, maskPhone } from "../../utils/masks";
-import { createPaciente } from "../../services/pacientes";
+import { createPaciente, updatePaciente } from "../../services/pacientes";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function PatientModal({ open, onClose, onPatientCreated }) {
+function calcularIdade(dataNascimento) {
+  if (!dataNascimento) return "";
+
+  const nascimento = new Date(dataNascimento);
+  if (Number.isNaN(nascimento.getTime())) return "";
+
+  const hoje = new Date();
+  let idade = hoje.getFullYear() - nascimento.getFullYear();
+  const mes = hoje.getMonth() - nascimento.getMonth();
+
+  if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+    idade--;
+  }
+
+  return idade;
+}
+
+export default function PatientModal({
+  open,
+  onClose,
+  onPatientCreated,
+  pacienteParaEditar = null,
+  onPatientUpdated,
+}) {
   const {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(PatientModalSchema),
   });
 
+  useEffect(() => {
+    if (!open) return;
+
+    if (pacienteParaEditar) {
+      const cpf =
+        pacienteParaEditar.cpf ?? pacienteParaEditar.CPF ?? "";
+      const telefone =
+        pacienteParaEditar.telefone ?? pacienteParaEditar.telefoneCelular ?? "";
+
+      reset({
+        nome:
+          pacienteParaEditar.nomeCompleto ??
+          pacienteParaEditar.nome_completo ??
+          pacienteParaEditar.nome ??
+          "",
+        idade:
+          pacienteParaEditar.idade ??
+          calcularIdade(
+            pacienteParaEditar.dataNascimento ??
+              pacienteParaEditar.data_nascimento,
+          ),
+        cpf: cpf ? maskCPF(String(cpf)) : "",
+        telefone: telefone ? maskPhone(String(telefone)) : "",
+        observacoes:
+          pacienteParaEditar.observacoesMedicas ??
+          pacienteParaEditar.observacoes_medicas ??
+          "",
+      });
+    } else {
+      reset({});
+    }
+  }, [open, pacienteParaEditar, reset]);
+
   const onSubmit = async (data) => {
     try {
+      const cpf = (data.cpf ?? "").replace(/\D/g, "");
       const dadosPaciente = {
         nome_completo: data.nome,
-        data_nascimento: new Date(new Date().getFullYear() - data.idade, 0, 1)
-          .toISOString()
-          .split("T")[0],
-        observacoes_medicas: null,
+        data_nascimento: `${String(new Date().getFullYear() - data.idade).padStart(4, "0")}-01-01`,
+        cpf: cpf.length === 11 ? cpf : null,
+        telefone: data.telefone || null,
+        observacoes_medicas: data.observacoes || null,
       };
 
-      await createPaciente(dadosPaciente);
-      onPatientCreated();
+      if (pacienteParaEditar) {
+        await updatePaciente(pacienteParaEditar.id, dadosPaciente);
+        onPatientUpdated();
+      } else {
+        await createPaciente(dadosPaciente);
+        onPatientCreated();
+      }
+
       onClose();
       reset();
     } catch (error) {
+      const cpfErrors = error.response?.data?.details?.cpf;
+      if (
+        error.response?.status === 422 &&
+        Array.isArray(cpfErrors) &&
+        cpfErrors.length > 0
+      ) {
+        setError("cpf", {
+          type: "manual",
+          message: cpfErrors[0],
+        });
+      }
       console.error(error);
     }
-
   };
 
   const handleClose = () => {
@@ -73,7 +148,7 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
           }}
         >
           <Box sx={{ fontWeight: "bold", color: "#111827", fontSize: "18px" }}>
-            Novo Paciente
+            {pacienteParaEditar ? "Editar Paciente" : "Novo Paciente"}
           </Box>
 
           <IconButton
@@ -188,9 +263,9 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
                 {...register("cpf")}
               />
 
-              {errors?.cpf && (
+              {errors.cpf?.message && (
                 <FormHelperText error sx={{ marginLeft: "5px" }}>
-                  {errors.cpf.message}
+                  {errors.cpf?.message}
                 </FormHelperText>
               )}
             </Box>
@@ -218,6 +293,38 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
                 {...register("telefone")}
                 onInput={(e) => (e.target.value = maskPhone(e.target.value))}
               />
+            </Box>
+            <Box>
+              <InputLabel
+                sx={{
+                  fontWeight: 500,
+                  color: "#0F172A",
+                  mb: "6px",
+                  fontSize: "14px",
+                }}
+              >
+                Observações Médicas
+              </InputLabel>
+              <OutlinedInput
+                multiline
+                rows={3}
+                size="small"
+                fullWidth
+                placeholder="Ex: Diabetes, alergia a penicilina..."
+                error={!!errors.observacoes}
+                sx={{
+                  borderRadius: "8px",
+                  bgcolor: "#F3F4F6",
+                  "& fieldset": { borderColor: "#E5E7EB" },
+                  "&:hover fieldset": { borderColor: "#D1D5DB" },
+                }}
+                {...register("observacoes")}
+              />
+              {errors?.observacoes && (
+                <FormHelperText error sx={{ marginLeft: "5px" }}>
+                  {errors.observacoes.message}
+                </FormHelperText>
+              )}
             </Box>
           </Box>
         </DialogContent>
@@ -255,7 +362,7 @@ export default function PatientModal({ open, onClose, onPatientCreated }) {
               "&:hover": { bgcolor: "#0069D9", boxShadow: "none" },
             }}
           >
-            Cadastrar
+            {pacienteParaEditar ? "Salvar Alterações" : "Cadastrar"}
           </Button>
         </DialogActions>
       </form>
