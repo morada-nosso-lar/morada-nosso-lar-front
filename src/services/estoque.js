@@ -1,16 +1,37 @@
 import { api } from "./api";
 
+export const CATEGORIAS_PRODUTO = [
+  "Remédios",
+  "Materiais Médicos",
+  "Higiene Pessoal",
+];
+
 function criarPayloadProduto(dadosProduto) {
+  if (!CATEGORIAS_PRODUTO.includes(dadosProduto.categoria)) {
+    throw new Error("Selecione uma categoria válida para o produto.");
+  }
+
+  const quantidade = Number(dadosProduto.quantidade);
+  if (!Number.isFinite(quantidade)) {
+    throw new Error("A quantidade do produto deve ser um número válido.");
+  }
+
   return {
     nome: dadosProduto.nome,
     categoria: dadosProduto.categoria,
-    quantidade: dadosProduto.quantidade,
+    quantidade,
     descricao: dadosProduto.descricao ?? "",
+    paciente_id:
+      dadosProduto.paciente_id != null
+        ? Number(dadosProduto.paciente_id)
+        : null,
   };
 }
 
-export async function getEstoque() {
-  const response = await api.get("/estoque");
+export async function getEstoque(pacienteId) {
+  const config =
+    pacienteId != null ? { params: { paciente_id: pacienteId } } : undefined;
+  const response = await api.get("/estoque", config);
   // O primeiro .data é do Axios, o segundo é a propriedade do teu back-end
   return response.data.data; 
 }

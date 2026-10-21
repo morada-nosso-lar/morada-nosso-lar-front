@@ -17,7 +17,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
-export default function PatientTable({ pacientes, onDelete }) {
+export default function PatientTable({ pacientes, estoque = [], onDelete }) {
   const [termoPesquisa, setTermoPesquisa] = useState("");
 
   const navigate = useNavigate()
@@ -120,9 +120,15 @@ export default function PatientTable({ pacientes, onDelete }) {
 
             <TableBody>
               {pacientesFiltrados.map((paciente) => {
-                const statusSeguro = paciente.status || "ok";
-                const alertaSeguro = paciente.alertaMsg || "OK";
-                const qtdMedicamentos = paciente.medicamentos || 0;
+                const itensPaciente = estoque.filter(
+                  (item) =>
+                    String(item.pacienteId ?? item.paciente_id) ===
+                    String(paciente.id),
+                );
+                const totalItens = itensPaciente.length;
+                const qtdCriticos = itensPaciente.filter(
+                  (item) => Number(item.quantidade) <= 3,
+                ).length;
 
                 return (
                   <TableRow key={paciente.id} hover>
@@ -160,7 +166,7 @@ export default function PatientTable({ pacientes, onDelete }) {
                             style={{ color: "#2563EB" }}
                           />
                         }
-                        label={`${qtdMedicamentos} itens`}
+                        label={`${totalItens} ${totalItens === 1 ? "item" : "itens"}`}
                         size="small"
                         sx={{
                           backgroundColor: "#DBEAFE",
@@ -173,19 +179,22 @@ export default function PatientTable({ pacientes, onDelete }) {
                     <TableCell>
                       <Chip
                         icon={
-                          statusSeguro === "ok" ? (
+                          qtdCriticos === 0 ? (
                             <CheckIcon style={{ color: "#16A34A" }} />
                           ) : (
                             <WarningAmberIcon style={{ color: "#DC2626" }} />
                           )
                         }
-                        label={alertaSeguro}
+                        label={
+                          qtdCriticos > 0
+                            ? `${qtdCriticos} Crítico(s)`
+                            : " OK"
+                        }
                         size="small"
                         sx={{
-                          backgroundColor:
-                            statusSeguro === "ok" ? "#DCFCE7" : "#FEE2E2",
-                          color: statusSeguro === "ok" ? "#16A34A" : "#DC2626",
-                          fontWeight: 500,
+                          backgroundColor: qtdCriticos > 0 ? "#FEE2E2" : "#DCFCE7",
+                          color: qtdCriticos > 0 ? "#DC2626" : "#16A34A",
+                          fontWeight: qtdCriticos > 0 ? 700 : 500,
                         }}
                       />
                     </TableCell>
