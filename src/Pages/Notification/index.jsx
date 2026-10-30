@@ -122,6 +122,7 @@ export default function Notification() {
             color: "#0F172A",
             letterSpacing: "-0.6px",
             lineHeight: 1.3,
+           // fontFamily: "'Plus Jakarta Sans', sans-serif",
           }}
         >
           Central de Notificação
@@ -207,6 +208,7 @@ export default function Notification() {
                         fontSize: "11px",
                         fontWeight: 700,
                         lineHeight: 1,
+                       
                       }}
                     >
                       {naoLidasCount}
@@ -251,8 +253,9 @@ export default function Notification() {
               justifyContent: "center",
               alignItems: "center",
               p: 2,
-              borderTop: "1px solid #F3F4F6",
+              borderTop: "1px solid #E2E8F0",
               backgroundColor: "#0A192F",
+              
             }}
           >
             <Pagination
@@ -266,10 +269,12 @@ export default function Notification() {
                   color: "rgba(255, 255, 255, 0.8)",
                   fontWeight: 500,
                   transition: "all 0.2s ease",
+                  
 
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.12)",
                     color: "#FFFFFF",
+                    
                   },
 
                   // Página atual selecionada

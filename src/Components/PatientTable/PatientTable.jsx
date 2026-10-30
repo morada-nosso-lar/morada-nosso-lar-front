@@ -194,7 +194,7 @@ export default function PatientTable({ pacientes, estoque = [], onDelete }) {
                         sx={{
                           backgroundColor: qtdCriticos > 0 ? "#FEE2E2" : "#DCFCE7",
                           color: qtdCriticos > 0 ? "#DC2626" : "#16A34A",
-                          fontWeight: qtdCriticos > 0 ? 700 : 500,
+                          fontWeight: qtdCriticos > 0 ? 500 : 500,
                         }}
                       />
                     </TableCell>
