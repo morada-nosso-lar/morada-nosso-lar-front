@@ -1,6 +1,10 @@
 import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 
 const baseTheme = createTheme({
+  typography: {
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+  },
+
   components: {
     MuiTableContainer: {
       styleOverrides: {
