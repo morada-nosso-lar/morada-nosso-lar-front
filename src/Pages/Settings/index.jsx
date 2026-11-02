@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import TableLogs from "../../Components/TableLogs/TableLogs";
 import { logsService } from "./../../services/log";
 import { useEffect, useState } from "react";
+import UserProfileCard from "../../Components/UserProfileCard/UserProfileCard";
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -51,9 +52,11 @@ export default function Settings() {
         </Box>
       </Box>
 
-      <br></br>
+      <Box sx={{ p: { xs: 2, sm: 3 } }}>
+        <UserProfileCard />
 
-      <TableLogs logs={logs}></TableLogs>
+        <TableLogs logs={logs}></TableLogs>
+      </Box>
     </>
   );
 }
