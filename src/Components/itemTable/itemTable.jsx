@@ -152,7 +152,7 @@ export default function ItemTable({
               ) : (
                 medicamentos.map((item) => {
                   // Regra de alerta: se a quantidade for menor ou igual a 2 (conforme regra da API) ou 4
-                  const isCritico = item.quantidade <= 2;
+                  const isCritico = item.quantidade <= 3;
 
                   return (
                     <TableRow

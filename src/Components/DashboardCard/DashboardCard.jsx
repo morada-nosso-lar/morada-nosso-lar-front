@@ -22,7 +22,7 @@ export default function DashboardCard({ title, value }) {
           py: 1.5, // Padding vertical
         }}
       >
-        <Typography
+        <Typography variant="subtitle1"
           sx={{
             color: "#64748B",
             fontSize: "14px",
@@ -39,9 +39,9 @@ export default function DashboardCard({ title, value }) {
           py: 1.5,
         }}
       >
-        <Typography
+        <Typography variant="number"
           sx={{
-            fontSize: "28px",
+            fontSize: "32px",
             fontWeight: "bold",
             color: "#1E293B",
           }}

@@ -166,7 +166,7 @@ export default function PatientProfileCard({
             sx={{ color: "#6B7280", fontSize: "20px" }}
           />
           <Box>
-            <Typography
+            <Typography variant="number"
               sx={{ fontSize: "11px", fontWeight: 400, color: "#6B7280" }}
             >
               Idade

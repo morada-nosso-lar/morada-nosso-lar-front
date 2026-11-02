@@ -20,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 export default function PatientTable({ pacientes, estoque = [], onDelete }) {
   const [termoPesquisa, setTermoPesquisa] = useState("");
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   function calcularIdade(dataNascimento) {
     if (!dataNascimento) return "--";
@@ -95,7 +95,12 @@ export default function PatientTable({ pacientes, estoque = [], onDelete }) {
         <TableContainer
           component={Paper}
           variant="outlined"
-          sx={{ width: "100%", maxWidth: "100%", borderRadius: 0, border: "none" }}
+          sx={{
+            width: "100%",
+            maxWidth: "100%",
+            borderRadius: 0,
+            border: "none",
+          }}
         >
           <Table sx={{ minWidth: 680 }}>
             <TableHead sx={{ backgroundColor: "#F8FAFC" }}>
@@ -143,17 +148,17 @@ export default function PatientTable({ pacientes, estoque = [], onDelete }) {
                             height: 32,
                             fontSize: "14px",
                           }}
-                        >
-                          {/* Opcional: Colocar a primeira letra do nome aqui */}
-                        </Avatar>
+                        ></Avatar>
 
                         <Typography sx={{ fontWeight: 500, color: "#1E293B" }}>
-                          {paciente.nomeCompleto || paciente.nome || paciente.nome_completo}
+                          {paciente.nomeCompleto ||
+                            paciente.nome ||
+                            paciente.nome_completo}
                         </Typography>
                       </Box>
                     </TableCell>
 
-                    <TableCell>
+                    <TableCell variant="number">
                       <Typography sx={{ color: "#64748B" }}>
                         {calcularIdade(paciente.dataNascimento)} anos
                       </Typography>
@@ -186,13 +191,12 @@ export default function PatientTable({ pacientes, estoque = [], onDelete }) {
                           )
                         }
                         label={
-                          qtdCriticos > 0
-                            ? `${qtdCriticos} Crítico(s)`
-                            : " OK"
+                          qtdCriticos > 0 ? `${qtdCriticos} Crítico(s)` : " OK"
                         }
                         size="small"
                         sx={{
-                          backgroundColor: qtdCriticos > 0 ? "#FEE2E2" : "#DCFCE7",
+                          backgroundColor:
+                            qtdCriticos > 0 ? "#FEE2E2" : "#DCFCE7",
                           color: qtdCriticos > 0 ? "#DC2626" : "#16A34A",
                           fontWeight: qtdCriticos > 0 ? 500 : 500,
                         }}
@@ -211,7 +215,9 @@ export default function PatientTable({ pacientes, estoque = [], onDelete }) {
                           }
                           label="Estoque"
                           size="small"
-                          onClick={() => navigate(`/dashboard/estoque/${paciente.id}`)}
+                          onClick={() =>
+                            navigate(`/dashboard/estoque/${paciente.id}`)
+                          }
                           sx={{
                             backgroundColor: "#DBEAFE",
                             color: "#2563EB",

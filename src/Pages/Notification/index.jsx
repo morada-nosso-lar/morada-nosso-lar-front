@@ -6,12 +6,17 @@ import {
   Tab,
   CircularProgress,
   Pagination,
+  IconButton,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import NotificationItem from "../../Components/NotificationItem/NotificationItem";
 import { notificacaoService } from "../../services/notificaçao";
+import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function Notification() {
+  const navigate = useNavigate();
+
   const [abaAtiva, setAbaAtiva] = useState(0);
   const [notificacoes, setNotificacoes] = useState([]);
   const [naoLidasCount, setNaoLidasCount] = useState(0);
@@ -28,8 +33,6 @@ export default function Notification() {
 
     setPaginaAtual(1);
   };
-
-  // Busca assíncrona isolada dentro do efeito
 
   useEffect(() => {
     let isMounted = true;
@@ -54,14 +57,12 @@ export default function Notification() {
       }
     };
 
-    buscarDados();
+      buscarDados();
 
     return () => {
       isMounted = false;
     };
   }, [abaAtiva]);
-
-  // Atualiza o estado local ao marcar como lida/não lida sem recarregar a tela
 
   const handleMarcarComoLida = async (id, novoStatusLida) => {
     try {
@@ -72,8 +73,6 @@ export default function Notification() {
       );
 
       if (resposta.success) {
-        // Remove da aba atual, pois o item mudou de estado (lida/não lida)
-
         setNotificacoes((prev) => prev.filter((item) => item.id !== id));
 
         // Atualiza a contagem do badge
@@ -105,35 +104,31 @@ export default function Notification() {
 
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 0.75,
-          mb: 3,
-          mx: { xs: 0, sm: 1 },
-        }}
-      >
-        <Typography
-          component="h1"
-          sx={{
-            fontSize: { xs: "22px", sm: "26px", md: "28px" },
-            fontWeight: 700,
-            color: "#0F172A",
-            letterSpacing: "-0.6px",
-            lineHeight: 1.3,
-           // fontFamily: "'Plus Jakarta Sans', sans-serif",
-          }}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <IconButton
+          onClick={() => navigate("/dashboard")}
+          sx={{ color: "#6B7280" }}
         >
-          Central de Notificação
-        </Typography>
+          <ArrowBackIcon />
+        </IconButton>
 
-        <Typography
-          sx={{ fontSize: "14px", color: "#64748B", lineHeight: 1.6 }}
-        >
-          Visualização centralizada de alertas de estoque e movimentações da
-          unidade.
-        </Typography>
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: { xs: "20px", sm: "22px", md: "24px" },
+              fontWeight: 600,
+              color: "#1C1C1E",
+              letterSpacing: "-0.5px",
+            }}
+          >
+            Central de Notificação
+          </Typography>
+          <Typography sx={{ fontSize: "14px", color: "#8E8E93" }}>
+            Visualização centralizada de alertas de estoque e movimentações da
+            unidade.
+          </Typography>
+        </Box>
       </Box>
 
       <Paper
@@ -208,7 +203,6 @@ export default function Notification() {
                         fontSize: "11px",
                         fontWeight: 700,
                         lineHeight: 1,
-                       
                       }}
                     >
                       {naoLidasCount}
@@ -255,7 +249,6 @@ export default function Notification() {
               p: 2,
               borderTop: "1px solid #E2E8F0",
               backgroundColor: "#0A192F",
-              
             }}
           >
             <Pagination
@@ -269,12 +262,10 @@ export default function Notification() {
                   color: "rgba(255, 255, 255, 0.8)",
                   fontWeight: 500,
                   transition: "all 0.2s ease",
-                  
 
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.12)",
                     color: "#FFFFFF",
-                    
                   },
 
                   // Página atual selecionada

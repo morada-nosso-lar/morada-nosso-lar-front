@@ -27,10 +27,10 @@ import {
   deleteProduto,
   updateProduto,
 } from "../../services/estoque";
-import { getPacientes } from "../../services/pacientes"; 
+import { getPacientes } from "../../services/pacientes";
 
 export default function EstoquePaciente() {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,7 +45,6 @@ export default function EstoquePaciente() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  // Carrega os dados do paciente e a lista global de produtos
   useEffect(() => {
     async function carregarDados() {
       setLoading(true);
@@ -53,14 +52,14 @@ export default function EstoquePaciente() {
       // 1. Busca do Paciente (Isolada num try/catch próprio)
       try {
         const respostaPacientes = await getPacientes();
-        
+
         // Isola o tratamento do array aqui para não quebrar o Dashboard global
-        const listaPacientes = Array.isArray(respostaPacientes) 
-          ? respostaPacientes 
+        const listaPacientes = Array.isArray(respostaPacientes)
+          ? respostaPacientes
           : respostaPacientes?.data || [];
 
         const pacienteAtual = listaPacientes.find(
-          (p) => String(p.id) === String(id)
+          (p) => String(p.id) === String(id),
         );
 
         if (pacienteAtual) {
@@ -74,7 +73,10 @@ export default function EstoquePaciente() {
             idade = hoje.getFullYear() - nascimento.getFullYear();
             const mes = hoje.getMonth() - nascimento.getMonth();
 
-            if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+            if (
+              mes < 0 ||
+              (mes === 0 && hoje.getDate() < nascimento.getDate())
+            ) {
               idade--;
             }
           }
@@ -90,9 +92,9 @@ export default function EstoquePaciente() {
       } catch (error) {
         console.error(
           "Erro ao carregar paciente. A carregar dados provisórios...",
-          error
+          error,
         );
-        setPaciente({ nome: "Paciente Provisório", idade: 0 }); 
+        setPaciente({ nome: "Paciente Provisório", idade: 0 });
       }
 
       // 2. Busca o estoque do paciente
@@ -186,8 +188,8 @@ export default function EstoquePaciente() {
         prev.map((item) =>
           item.id === itemAtual.id
             ? { ...item, quantidade: novaQuantidade }
-            : item
-        )
+            : item,
+        ),
       );
       setSnackbarSeverity("success");
     } catch (error) {
@@ -249,6 +251,7 @@ export default function EstoquePaciente() {
 
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             <Typography
+              variant="h1"
               sx={{
                 fontSize: { xs: "20px", sm: "22px", md: "24px" },
                 fontWeight: 600,
