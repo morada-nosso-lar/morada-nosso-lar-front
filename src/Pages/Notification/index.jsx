@@ -57,7 +57,7 @@ export default function Notification() {
       }
     };
 
-      buscarDados();
+    buscarDados();
 
     return () => {
       isMounted = false;
@@ -144,7 +144,7 @@ export default function Notification() {
       >
         <Box
           sx={{
-            backgroundColor: "#0A192F",
+            backgroundColor: "#0F4C81",
             borderBottom: "1px solid #E2E8F0",
             px: { xs: 1, sm: 2 },
           }}
@@ -218,8 +218,8 @@ export default function Notification() {
 
         <Box sx={{ minHeight: 300 }}>
           {loading ? (
-            <Box sx={{ display: "flex", justifyContent: "center", p: 5 }}>
-              <CircularProgress size={32} />
+            <Box sx={{ display: "flex", justifyContent: "center", p: 6 }}>
+              <CircularProgress size={32} sx={{ color: "#0A192F" }} />
             </Box>
           ) : notificacoes.length === 0 ? (
             <Box sx={{ p: 4, textAlign: "center" }}>
@@ -248,7 +248,7 @@ export default function Notification() {
               alignItems: "center",
               p: 2,
               borderTop: "1px solid #E2E8F0",
-              backgroundColor: "#0A192F",
+              backgroundColor: "#0F4C81",
             }}
           >
             <Pagination

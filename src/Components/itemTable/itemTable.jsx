@@ -6,6 +6,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress";
 import { Box, Typography, IconButton } from "@mui/material";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddIcon from "@mui/icons-material/Add";
@@ -15,6 +16,7 @@ export default function ItemTable({
   medicamentos = [],
   onDelete,
   onUpdateQuantidade,
+  loading = false,
 }) {
   return (
     <Box
@@ -139,7 +141,13 @@ export default function ItemTable({
             </TableHead>
 
             <TableBody>
-              {medicamentos.length === 0 ? (
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                    <CircularProgress size={36} sx={{ color: "#0A192F" }} />
+                  </TableCell>
+                </TableRow>
+              ) : medicamentos.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={4}
@@ -264,7 +272,6 @@ export default function ItemTable({
                             gap: 1.5,
                           }}
                         >
-                          
                           <IconButton
                             size="small"
                             aria-label={`Excluir ${item.nome}`}

@@ -45,6 +45,7 @@ export default function EstoquePaciente() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
+
   useEffect(() => {
     async function carregarDados() {
       setLoading(true);
@@ -300,6 +301,7 @@ export default function EstoquePaciente() {
         medicamentos={medicamentos}
         onDelete={handleDeleteItem}
         onUpdateQuantidade={handleUpdateQuantidade}
+        loading={loading}
       />
 
       <ItemModal

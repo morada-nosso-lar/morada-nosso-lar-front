@@ -6,6 +6,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress"
 import { Box, Typography, Avatar, IconButton } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
@@ -17,7 +18,12 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
-export default function PatientTable({ pacientes, estoque = [], onDelete }) {
+export default function PatientTable({
+  pacientes,
+  estoque = [],
+  onDelete,
+  loading = false,
+}) {
   const [termoPesquisa, setTermoPesquisa] = useState("");
 
   const navigate = useNavigate();
@@ -124,121 +130,133 @@ export default function PatientTable({ pacientes, estoque = [], onDelete }) {
             </TableHead>
 
             <TableBody>
-              {pacientesFiltrados.map((paciente) => {
-                const itensPaciente = estoque.filter(
-                  (item) =>
-                    String(item.pacienteId ?? item.paciente_id) ===
-                    String(paciente.id),
-                );
-                const totalItens = itensPaciente.length;
-                const qtdCriticos = itensPaciente.filter(
-                  (item) => Number(item.quantidade) <= 3,
-                ).length;
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                    <CircularProgress size={36} sx={{ color: "#0A192F" }} />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                pacientesFiltrados.map((paciente) => {
+                  const itensPaciente = estoque.filter(
+                    (item) =>
+                      String(item.pacienteId ?? item.paciente_id) ===
+                      String(paciente.id),
+                  );
+                  const totalItens = itensPaciente.length;
+                  const qtdCriticos = itensPaciente.filter(
+                    (item) => Number(item.quantidade) <= 3,
+                  ).length;
 
-                return (
-                  <TableRow key={paciente.id} hover>
-                    <TableCell>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
-                      >
-                        <Avatar
-                          sx={{
-                            bgcolor: "#0F4C81",
-                            width: 32,
-                            height: 32,
-                            fontSize: "14px",
-                          }}
-                        ></Avatar>
+                  return (
+                    <TableRow key={paciente.id} hover>
+                      <TableCell>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                        >
+                          <Avatar
+                            sx={{
+                              bgcolor: "#0F4C81",
+                              width: 32,
+                              height: 32,
+                              fontSize: "14px",
+                            }}
+                          ></Avatar>
 
-                        <Typography sx={{ fontWeight: 500, color: "#1E293B" }}>
-                          {paciente.nomeCompleto ||
-                            paciente.nome ||
-                            paciente.nome_completo}
+                          <Typography
+                            sx={{ fontWeight: 500, color: "#1E293B" }}
+                          >
+                            {paciente.nomeCompleto ||
+                              paciente.nome ||
+                              paciente.nome_completo}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+
+                      <TableCell variant="number">
+                        <Typography sx={{ color: "#64748B" }}>
+                          {calcularIdade(paciente.dataNascimento)} anos
                         </Typography>
-                      </Box>
-                    </TableCell>
+                      </TableCell>
 
-                    <TableCell variant="number">
-                      <Typography sx={{ color: "#64748B" }}>
-                        {calcularIdade(paciente.dataNascimento)} anos
-                      </Typography>
-                    </TableCell>
-
-                    <TableCell>
-                      <Chip
-                        icon={
-                          <Inventory2OutlinedIcon
-                            style={{ color: "#2563EB" }}
-                          />
-                        }
-                        label={`${totalItens} ${totalItens === 1 ? "item" : "itens"}`}
-                        size="small"
-                        sx={{
-                          backgroundColor: "#DBEAFE",
-                          color: "#2563EB",
-                          fontWeight: 500,
-                        }}
-                      />
-                    </TableCell>
-
-                    <TableCell>
-                      <Chip
-                        icon={
-                          qtdCriticos === 0 ? (
-                            <CheckIcon style={{ color: "#16A34A" }} />
-                          ) : (
-                            <WarningAmberIcon style={{ color: "#DC2626" }} />
-                          )
-                        }
-                        label={
-                          qtdCriticos > 0 ? `${qtdCriticos} Crítico(s)` : " OK"
-                        }
-                        size="small"
-                        sx={{
-                          backgroundColor:
-                            qtdCriticos > 0 ? "#FEE2E2" : "#DCFCE7",
-                          color: qtdCriticos > 0 ? "#DC2626" : "#16A34A",
-                          fontWeight: qtdCriticos > 0 ? 500 : 500,
-                        }}
-                      />
-                    </TableCell>
-
-                    <TableCell>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
+                      <TableCell>
                         <Chip
                           icon={
                             <Inventory2OutlinedIcon
                               style={{ color: "#2563EB" }}
                             />
                           }
-                          label="Estoque"
+                          label={`${totalItens} ${totalItens === 1 ? "item" : "itens"}`}
                           size="small"
-                          onClick={() =>
-                            navigate(`/dashboard/estoque/${paciente.id}`)
-                          }
                           sx={{
                             backgroundColor: "#DBEAFE",
                             color: "#2563EB",
                             fontWeight: 500,
-                            cursor: "pointer",
-                            "&:hover": { backgroundColor: "#BFDBFE" },
                           }}
                         />
+                      </TableCell>
 
-                        <IconButton
+                      <TableCell>
+                        <Chip
+                          icon={
+                            qtdCriticos === 0 ? (
+                              <CheckIcon style={{ color: "#16A34A" }} />
+                            ) : (
+                              <WarningAmberIcon style={{ color: "#DC2626" }} />
+                            )
+                          }
+                          label={
+                            qtdCriticos > 0
+                              ? `${qtdCriticos} Crítico(s)`
+                              : " OK"
+                          }
                           size="small"
-                          sx={{ color: "#64748B" }}
-                          onClick={() => onDelete(paciente.id)}
+                          sx={{
+                            backgroundColor:
+                              qtdCriticos > 0 ? "#FEE2E2" : "#DCFCE7",
+                            color: qtdCriticos > 0 ? "#DC2626" : "#16A34A",
+                            fontWeight: qtdCriticos > 0 ? 500 : 500,
+                          }}
+                        />
+                      </TableCell>
+
+                      <TableCell>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
-                          <DeleteOutlinedIcon fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                          <Chip
+                            icon={
+                              <Inventory2OutlinedIcon
+                                style={{ color: "#2563EB" }}
+                              />
+                            }
+                            label="Estoque"
+                            size="small"
+                            onClick={() =>
+                              navigate(`/dashboard/estoque/${paciente.id}`)
+                            }
+                            sx={{
+                              backgroundColor: "#DBEAFE",
+                              color: "#2563EB",
+                              fontWeight: 500,
+                              cursor: "pointer",
+                              "&:hover": { backgroundColor: "#BFDBFE" },
+                            }}
+                          />
+
+                          <IconButton
+                            size="small"
+                            sx={{ color: "#64748B" }}
+                            onClick={() => onDelete(paciente.id)}
+                          >
+                            <DeleteOutlinedIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
             </TableBody>
           </Table>
         </TableContainer>

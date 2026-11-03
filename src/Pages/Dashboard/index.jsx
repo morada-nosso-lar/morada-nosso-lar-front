@@ -26,9 +26,12 @@ export default function Dashboard() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState(null);
+  const [loadingPacientes, setLoadingPacientes] = useState(false);
 
   useEffect(() => {
     async function carregar() {
+      setLoadingPacientes(true);
+
       try {
         const [resposta, respostaEstoque] = await Promise.all([
           getPacientes(),
@@ -44,6 +47,8 @@ export default function Dashboard() {
         setEstoque(Array.isArray(listaEstoque) ? listaEstoque : []);
       } catch (error) {
         console.error("erro ao carregar dados do paciente", error);
+      } finally {
+        setLoadingPacientes(false);
       }
     }
 
@@ -80,10 +85,7 @@ export default function Dashboard() {
   );
   const estoqueConsiderado = estoque.filter((item) => {
     const pacienteId = item.pacienteId ?? item.paciente_id;
-    return (
-      pacienteId == null ||
-      idsPacientesAtivos.has(String(pacienteId))
-    );
+    return pacienteId == null || idsPacientesAtivos.has(String(pacienteId));
   });
 
   const totalMedicamentos = estoqueConsiderado.length;
@@ -133,7 +135,8 @@ export default function Dashboard() {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
+          gridTemplateColumns:
+            "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
           gap: 3,
         }}
       >
@@ -147,6 +150,7 @@ export default function Dashboard() {
           pacientes={pacientes}
           estoque={estoque}
           onDelete={handleDelete}
+          loading={loadingPacientes}
         />
       </Box>
 
@@ -218,7 +222,8 @@ export default function Dashboard() {
           <DialogContentText
             sx={{ textAlign: "center", fontSize: "14px", color: "#6B7280" }}
           >
-            Tem certeza de que deseja desativar este paciente? O perfil e todo o seu histórico médico serão arquivados com segurança no sistema
+            Tem certeza de que deseja desativar este paciente? O perfil e todo o
+            seu histórico médico serão arquivados com segurança no sistema
           </DialogContentText>
         </DialogContent>
 

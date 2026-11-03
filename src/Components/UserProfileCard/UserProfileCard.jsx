@@ -53,6 +53,7 @@ export default function UserProfileCard() {
         alignItems: "center",
         gap: 2,
         mb: 3,
+        boxShadow: "0 4px 16px rgba(15, 35, 65, 0.04)",
       }}
     >
       {/* Avatar com a inicial do nome ou ícone fallback */}
@@ -60,7 +61,7 @@ export default function UserProfileCard() {
         sx={{
           width: 56,
           height: 56,
-          bgcolor: "#0A192F",
+          bgcolor: "#0F4C81",
           color: "#FFFFFF",
           fontWeight: 700,
           fontSize: "22px",

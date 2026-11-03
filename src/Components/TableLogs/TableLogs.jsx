@@ -9,10 +9,11 @@ import {
   Box,
   Typography,
   TablePagination,
+  CircularProgress,
 } from "@mui/material";
 import { useState } from "react";
 
-export default function TableLogs({ logs = [] }) {
+export default function TableLogs({ logs = [], loading = false }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -33,6 +34,7 @@ export default function TableLogs({ logs = [] }) {
         borderColor: "#C4CEDB",
         bgcolor: "#fff",
         overflow: "hidden",
+        boxShadow: "0 4px 16px rgba(15, 35, 65, 0.04)",
       }}
     >
       <Box sx={{ p: 2.5, borderBottom: "1px solid #E2E8F0" }}>
@@ -93,47 +95,65 @@ export default function TableLogs({ logs = [] }) {
           </TableHead>
 
           <TableBody>
-            {logs
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((log) => {
-                return (
-                  <TableRow
-                    key={log.id}
-                    hover
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell
-                      align="left"
-                      sx={{ fontSize: "13px", color: "#64748B" }}
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={4} align="center" sx={{ py: 6 }}>
+                  <CircularProgress size={36} sx={{ color: "#0A192F" }} />
+                </TableCell>
+              </TableRow>
+            ) : logs.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  align="center"
+                  sx={{ color: "#94A3B8", py: 4 }}
+                >
+                  Nenhum registro de log encontrado.
+                </TableCell>
+              </TableRow>
+            ) : (
+              logs
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((log) => {
+                  return (
+                    <TableRow
+                      key={log.id}
+                      hover
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      {new Date(log.createdAt).toLocaleString("pt-BR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        color: "#1E293B",
-                      }}
-                    >
-                      {log.usuarioNome}
-                    </TableCell>
-                    <TableCell align="center">{log.acao}</TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{ fontSize: "14px", color: "#334155" }}
-                    >
-                      {log.descricao}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                      <TableCell
+                        align="left"
+                        sx={{ fontSize: "13px", color: "#64748B" }}
+                      >
+                        {new Date(log.createdAt).toLocaleString("pt-BR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </TableCell>
+                      <TableCell
+                        align="left"
+                        sx={{
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          color: "#1E293B",
+                        }}
+                      >
+                        {log.usuarioNome}
+                      </TableCell>
+                      <TableCell align="center">{log.acao}</TableCell>
+                      <TableCell
+                        align="left"
+                        sx={{ fontSize: "14px", color: "#334155" }}
+                      >
+                        {log.descricao}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+            )}
           </TableBody>
         </Table>
       </TableContainer>

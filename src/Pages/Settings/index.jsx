@@ -9,9 +9,12 @@ import UserProfileCard from "../../Components/UserProfileCard/UserProfileCard";
 export default function Settings() {
   const navigate = useNavigate();
   const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function carregarLogs() {
+      setLoading(true);
+
       try {
         const resposta = await logsService.listar();
 
@@ -20,6 +23,8 @@ export default function Settings() {
         }
       } catch (error) {
         console.error("Erro ao buscar os logs do sitema", error);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -55,7 +60,7 @@ export default function Settings() {
       <Box sx={{ p: { xs: 2, sm: 3 } }}>
         <UserProfileCard />
 
-        <TableLogs logs={logs}></TableLogs>
+        <TableLogs logs={logs} loading={loading}></TableLogs>
       </Box>
     </>
   );
