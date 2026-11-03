@@ -5,7 +5,7 @@ Interface web do sistema de **gestão de cuidadores e controle de estoque de sup
 ---
 
 
-https://github.com/user-attachments/assets/567a0c2a-9af1-405e-bc5f-9211b9656b74
+https://github.com/user-attachments/assets/a05f8b39-b0ec-45b1-a791-c81824312cc1
 
 ---
 
