@@ -38,6 +38,15 @@ const baseTheme = createTheme({
   },
 
   components: {
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "rgba(15, 23, 42, 0.45)",
+          backdropFilter: "blur(5px)",
+          WebkitBackdropFilter: "blur(5px)",
+        },
+      },
+    },
     MuiTableContainer: {
       styleOverrides: {
         root: {

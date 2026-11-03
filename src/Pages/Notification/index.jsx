@@ -7,12 +7,16 @@ import {
   CircularProgress,
   Pagination,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import NotificationItem from "../../Components/NotificationItem/NotificationItem";
 import { notificacaoService } from "../../services/notificaçao";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import MailOutlineIcon from "@mui/icons-material/MailOutlineOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 
 export default function Notification() {
   const navigate = useNavigate();
@@ -22,11 +26,19 @@ export default function Notification() {
   const [naoLidasCount, setNaoLidasCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    type: "read",
+  });
   const itensPorPagina = 5;
   const totalPagina = Math.ceil(notificacoes.length / itensPorPagina);
   const inicio = (paginaAtual - 1) * itensPorPagina;
   const fim = inicio + itensPorPagina;
   const notificacoesExibidas = notificacoes.slice(inicio, fim);
+
+  const handleCloseSnackbar = () =>
+    setSnackbar((prev) => ({ ...prev, open: false }));
 
   const handleTrocarDeAba = (event, novoValor) => {
     setAbaAtiva(novoValor);
@@ -80,6 +92,11 @@ export default function Notification() {
         setNaoLidasCount((prev) =>
           Math.max(0, novoStatusLida ? prev - 1 : prev + 1),
         );
+        setSnackbar({
+          open: true,
+          message: "Notificação marcada como lida/não lida com sucesso!",
+          type: "read",
+        });
       }
     } catch (error) {
       console.error("Erro ao alterar status da notificação", error);
@@ -96,6 +113,12 @@ export default function Notification() {
         if (abaAtiva === 0) {
           setNaoLidasCount((prev) => Math.max(0, prev - 1));
         }
+
+        setSnackbar({
+          open: true,
+          message: "Notificação excluída com sucesso!",
+          type: "delete",
+        });
       }
     } catch (error) {
       console.error("Erro ao deletar notificação", error);
@@ -288,6 +311,40 @@ export default function Notification() {
           </Box>
         )}
       </Paper>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "left" }}
+      >
+        <Alert
+          severity="success"
+          icon={
+            snackbar.type === "read" ? (
+              <MailOutlineIcon sx={{ color: "#0288D1", fontSize: 22 }} />
+            ) : (
+              <DeleteOutlineIcon sx={{ color: "#2E7D32", fontSize: 22 }} />
+            )
+          }
+          sx={{
+            width: "100%",
+            borderRadius: "10px",
+            boxShadow: "0 4px 14px rgba(0, 0, 0, 0.08)",
+            fontSize: "14px",
+            fontWeight: 500,
+            alignItems: "center",
+            backgroundColor:
+              snackbar.type === "read" ? "#E5F6FD" : "#EDF7ED",
+            color: snackbar.type === "read" ? "#014361" : "#1E4620",
+            "& .MuiAlert-icon": {
+              color: snackbar.type === "read" ? "#0288D1" : "#2E7D32",
+              fontSize: 22,
+            },
+          }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
