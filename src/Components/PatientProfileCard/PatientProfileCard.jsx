@@ -36,9 +36,10 @@ export default function PatientProfileCard({
   loading,
   onEditClick,
 }) {
-  const criticosCount = medicamentos.filter(
-    (item) => Number(item.quantidade) <= 3,
-  ).length;
+  const criticosCount = medicamentos.filter((item) => {
+    const min = item.estoqueMinimo ?? item.estoque_minimo ?? 3;
+    return Number(item.quantidade) <= Number(min);
+  }).length;
   const hasCriticos = criticosCount > 0;
 
   const nomePaciente =
@@ -50,10 +51,18 @@ export default function PatientProfileCard({
   const cpfValue = paciente?.cpf;
 
   const telefoneValue =
+    paciente?.telefonesFamiliar ||
+    paciente?.telefones_familiar ||
     paciente?.telefone ||
     paciente?.telefone_contato ||
     paciente?.contato ||
     paciente?.telefoneContato;
+
+  const nomeFamiliarValue =
+    paciente?.nomeFamiliar || paciente?.nome_familiar;
+
+  const parentescoValue =
+    paciente?.parentescoFamiliar || paciente?.parentesco_familiar;
 
   const observacoesMedicas =
     paciente?.observacoesMedicas ?? paciente?.observacoes_medicas;
@@ -213,7 +222,7 @@ export default function PatientProfileCard({
           </Box>
         </Box>
 
-        {/* Telefone */}
+        {/* Telefone do Familiar */}
         <Box
           sx={{
             bgcolor: "#F8FAFC",
@@ -233,12 +242,14 @@ export default function PatientProfileCard({
             <Typography
               sx={{ fontSize: "11px", fontWeight: 400, color: "#6B7280" }}
             >
-              Telefone
+              {nomeFamiliarValue
+                ? `Familiar: ${nomeFamiliarValue}${parentescoValue ? ` (${parentescoValue})` : ""}`
+                : "Telefone do Familiar"}
             </Typography>
             <Typography
               sx={{ fontSize: "13px", fontWeight: 500, color: "#1C1C1E" }}
             >
-              {loading ? "--" : formatTelefone(telefoneValue)}
+              {loading ? "--" : (telefoneValue || "Não informado")}
             </Typography>
           </Box>
         </Box>

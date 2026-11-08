@@ -7,10 +7,12 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
+import Tooltip from "@mui/material/Tooltip";
 import { Box, Typography, IconButton } from "@mui/material";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
 export default function ItemTable({
   medicamentos = [],
@@ -130,6 +132,21 @@ export default function ItemTable({
                 </TableCell>
                 <TableCell
                   sx={{
+                    py: 1.75,
+                    px: 2.5,
+                    bgcolor: "#F8FAFC",
+                    color: "#64748B",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    letterSpacing: "0.3px",
+                    borderBottom: "1px solid #E2E8F0",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  EST. MÍNIMO
+                </TableCell>
+                <TableCell
+                  sx={{
                     color: "#64748B",
                     fontWeight: "bold",
                     fontSize: "12px",
@@ -150,7 +167,7 @@ export default function ItemTable({
               ) : medicamentos.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={4}
+                    colSpan={5}
                     align="center"
                     sx={{ py: 4, color: "#6B7280" }}
                   >
@@ -159,8 +176,13 @@ export default function ItemTable({
                 </TableRow>
               ) : (
                 medicamentos.map((item) => {
-                  // Regra de alerta: se a quantidade for menor ou igual a 2 (conforme regra da API) ou 4
-                  const isCritico = item.quantidade <= 3;
+                  // Usa o estoqueMinimo personalizado do item (retornado pelo backend).
+                  // Fallback: 3 caso o campo ainda não exista.
+                  const estoqueMinimo =
+                    item.estoqueMinimo ??
+                    item.estoque_minimo ??
+                    3;
+                  const isCritico = Number(item.quantidade) <= Number(estoqueMinimo);
 
                   return (
                     <TableRow
@@ -174,17 +196,27 @@ export default function ItemTable({
                           borderBottom: 0,
                         },
                         transition: "background-color 0.2s ease",
+                        bgcolor: isCritico ? "#FFF5F5" : "transparent",
                       }}
                     >
                       <TableCell>
-                        <Typography
-                          sx={{
-                            fontWeight: 500,
-                            color: isCritico ? "#DC2626" : "#1E293B",
-                          }}
-                        >
-                          {item.nome}
-                        </Typography>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                          {isCritico && (
+                            <Tooltip title={`Estoque crítico! Mínimo: ${estoqueMinimo}`}>
+                              <WarningAmberIcon
+                                sx={{ color: "#DC2626", fontSize: "16px" }}
+                              />
+                            </Tooltip>
+                          )}
+                          <Typography
+                            sx={{
+                              fontWeight: 500,
+                              color: isCritico ? "#DC2626" : "#1E293B",
+                            }}
+                          >
+                            {item.nome}
+                          </Typography>
+                        </Box>
                       </TableCell>
 
                       <TableCell>
@@ -262,6 +294,19 @@ export default function ItemTable({
                             <AddIcon fontSize="small" />
                           </IconButton>
                         </Box>
+                      </TableCell>
+
+                      {/* Coluna Estoque Mínimo */}
+                      <TableCell>
+                        <Typography
+                          sx={{
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: isCritico ? "#DC2626" : "#475569",
+                          }}
+                        >
+                          {estoqueMinimo} unid.
+                        </Typography>
                       </TableCell>
 
                       <TableCell>

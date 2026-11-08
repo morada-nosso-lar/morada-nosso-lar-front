@@ -21,6 +21,13 @@ function criarPayloadProduto(dadosProduto) {
     categoria: dadosProduto.categoria,
     quantidade,
     descricao: dadosProduto.descricao ?? "",
+    // Estoque mínimo personalizado por produto
+    estoque_minimo:
+      dadosProduto.estoqueMinimo != null
+        ? Number(dadosProduto.estoqueMinimo)
+        : dadosProduto.estoque_minimo != null
+          ? Number(dadosProduto.estoque_minimo)
+          : 3,
     paciente_id:
       dadosProduto.paciente_id != null
         ? Number(dadosProduto.paciente_id)

@@ -25,6 +25,10 @@ const ItemModalSchema = z.object({
   quantidade: z.coerce
     .number()
     .min(0, "A quantidade não pode ser negativa"),
+  estoqueMinimo: z.coerce
+    .number()
+    .min(0, "O estoque mínimo não pode ser negativo")
+    .default(3),
   descricao: z.string().optional(),
 });
 
@@ -39,6 +43,7 @@ export default function ItemModal({ open, onClose, onItemCreated }) {
     resolver: zodResolver(ItemModalSchema),
     defaultValues: {
       quantidade: 1,
+      estoqueMinimo: 3,
       categoria: "",
       descricao: "",
     },
@@ -49,6 +54,7 @@ export default function ItemModal({ open, onClose, onItemCreated }) {
       nome: data.nome,
       categoria: data.categoria,
       quantidade: Number(data.quantidade),
+      estoqueMinimo: Number(data.estoqueMinimo ?? 3),
       descricao: data.descricao ?? "",
     });
     
@@ -215,6 +221,37 @@ export default function ItemModal({ open, onClose, onItemCreated }) {
               {errors?.quantidade && (
                 <FormHelperText error sx={{ marginLeft: "5px" }}>
                   {errors.quantidade.message}
+                </FormHelperText>
+              )}
+            </Box>
+
+            <Box>
+              <InputLabel
+                sx={{
+                  fontWeight: 500,
+                  color: "#0F172A",
+                  mb: "6px",
+                  fontSize: "14px",
+                }}
+              >
+                Estoque Mínimo (alerta abaixo deste valor)
+              </InputLabel>
+              <OutlinedInput
+                type="number"
+                size="small"
+                fullWidth
+                placeholder="Ex: 5"
+                error={!!errors.estoqueMinimo}
+                sx={{
+                  borderRadius: "8px",
+                  bgcolor: "#F3F4F6",
+                  "& fieldset": { borderColor: "#E5E7EB" },
+                }}
+                {...register("estoqueMinimo")}
+              />
+              {errors?.estoqueMinimo && (
+                <FormHelperText error sx={{ marginLeft: "5px" }}>
+                  {errors.estoqueMinimo.message}
                 </FormHelperText>
               )}
             </Box>

@@ -21,6 +21,10 @@ function criarPayloadPaciente(dadosPaciente) {
     cpf: dadosPaciente.cpf ?? null,
     data_nascimento: dataNascimento,
     observacoes_medicas: dadosPaciente.observacoes_medicas ?? null,
+    // Contato do familiar
+    telefones_familiar: dadosPaciente.telefones_familiar ?? dadosPaciente.telefone ?? null,
+    nome_familiar: dadosPaciente.nome_familiar ?? null,
+    parentesco_familiar: dadosPaciente.parentesco_familiar ?? null,
   };
 }
 

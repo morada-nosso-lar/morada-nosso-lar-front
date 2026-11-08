@@ -56,8 +56,13 @@ export default function PatientModal({
     if (pacienteParaEditar) {
       const cpf =
         pacienteParaEditar.cpf ?? pacienteParaEditar.CPF ?? "";
+      // Telefone do familiar: campo enviado pelo backend é telefonesFamiliar
       const telefone =
-        pacienteParaEditar.telefone ?? pacienteParaEditar.telefoneCelular ?? "";
+        pacienteParaEditar.telefonesFamiliar ??
+        pacienteParaEditar.telefones_familiar ??
+        pacienteParaEditar.telefone ??
+        pacienteParaEditar.telefoneCelular ??
+        "";
 
       reset({
         nome:
@@ -73,6 +78,14 @@ export default function PatientModal({
           ),
         cpf: cpf ? maskCPF(String(cpf)) : "",
         telefone: telefone ? maskPhone(String(telefone)) : "",
+        nomeFamiliar:
+          pacienteParaEditar.nomeFamiliar ??
+          pacienteParaEditar.nome_familiar ??
+          "",
+        parentescoFamiliar:
+          pacienteParaEditar.parentescoFamiliar ??
+          pacienteParaEditar.parentesco_familiar ??
+          "",
         observacoes:
           pacienteParaEditar.observacoesMedicas ??
           pacienteParaEditar.observacoes_medicas ??
@@ -90,7 +103,10 @@ export default function PatientModal({
         nome_completo: data.nome,
         data_nascimento: `${String(new Date().getFullYear() - data.idade).padStart(4, "0")}-01-01`,
         cpf: cpf.length === 11 ? cpf : null,
-        telefone: data.telefone || null,
+        // Enviamos o telefone como "telefones_familiar" para o backend
+        telefones_familiar: data.telefone || null,
+        nome_familiar: data.nomeFamiliar || null,
+        parentesco_familiar: data.parentescoFamiliar || null,
         observacoes_medicas: data.observacoes || null,
       };
 
@@ -278,7 +294,7 @@ export default function PatientModal({
                   fontSize: "14px",
                 }}
               >
-                Telefone
+                Telefone do Familiar / Responsável
               </InputLabel>
               <OutlinedInput
                 size="small"
@@ -292,6 +308,54 @@ export default function PatientModal({
                 }}
                 {...register("telefone")}
                 onInput={(e) => (e.target.value = maskPhone(e.target.value))}
+              />
+            </Box>
+            <Box>
+              <InputLabel
+                sx={{
+                  fontWeight: 500,
+                  color: "#0F172A",
+                  mb: "6px",
+                  fontSize: "14px",
+                }}
+              >
+                Nome do Familiar / Responsável
+              </InputLabel>
+              <OutlinedInput
+                size="small"
+                fullWidth
+                placeholder="Ex: Maria Silva"
+                sx={{
+                  borderRadius: "8px",
+                  bgcolor: "#F3F4F6",
+                  "& fieldset": { borderColor: "#E5E7EB" },
+                  "&:hover fieldset": { borderColor: "#D1D5DB" },
+                }}
+                {...register("nomeFamiliar")}
+              />
+            </Box>
+            <Box>
+              <InputLabel
+                sx={{
+                  fontWeight: 500,
+                  color: "#0F172A",
+                  mb: "6px",
+                  fontSize: "14px",
+                }}
+              >
+                Parentesco
+              </InputLabel>
+              <OutlinedInput
+                size="small"
+                fullWidth
+                placeholder="Ex: Filho(a), Cônjuge, Irmão(ã)"
+                sx={{
+                  borderRadius: "8px",
+                  bgcolor: "#F3F4F6",
+                  "& fieldset": { borderColor: "#E5E7EB" },
+                  "&:hover fieldset": { borderColor: "#D1D5DB" },
+                }}
+                {...register("parentescoFamiliar")}
               />
             </Box>
             <Box>
