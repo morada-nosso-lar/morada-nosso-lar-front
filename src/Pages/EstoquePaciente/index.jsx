@@ -28,7 +28,7 @@ import {
   updateProduto,
   patchProduto,
 } from "../../services/estoque";
-import { getPacientes } from "../../services/pacientes";
+import { getPacientes, getPacienteById } from "../../services/pacientes";
 
 export default function EstoquePaciente() {
   const { id } = useParams();
@@ -53,16 +53,20 @@ export default function EstoquePaciente() {
 
       // 1. Busca do Paciente (Isolada num try/catch próprio)
       try {
-        const respostaPacientes = await getPacientes();
-
-        // Isola o tratamento do array aqui para não quebrar o Dashboard global
-        const listaPacientes = Array.isArray(respostaPacientes)
-          ? respostaPacientes
-          : respostaPacientes?.data || [];
-
-        const pacienteAtual = listaPacientes.find(
-          (p) => String(p.id) === String(id),
-        );
+        let pacienteAtual = null;
+        try {
+          const resIndividual = await getPacienteById(id);
+          pacienteAtual = resIndividual?.data || resIndividual;
+        } catch {
+          // Fallback caso a rota individual falhe
+          const respostaPacientes = await getPacientes();
+          const listaPacientes = Array.isArray(respostaPacientes)
+            ? respostaPacientes
+            : respostaPacientes?.data || [];
+          pacienteAtual = listaPacientes.find(
+            (p) => String(p.id) === String(id),
+          );
+        }
 
         if (pacienteAtual) {
           const nascimento = pacienteAtual.dataNascimento
@@ -123,13 +127,19 @@ export default function EstoquePaciente() {
 
   const handlePatientUpdated = async () => {
     try {
-      const respostaPacientes = await getPacientes();
-      const listaPacientes = Array.isArray(respostaPacientes)
-        ? respostaPacientes
-        : respostaPacientes?.data || [];
-      const pacienteAtualizado = listaPacientes.find(
-        (p) => String(p.id) === String(id),
-      );
+      let pacienteAtualizado = null;
+      try {
+        const resIndividual = await getPacienteById(id);
+        pacienteAtualizado = resIndividual?.data || resIndividual;
+      } catch {
+        const respostaPacientes = await getPacientes();
+        const listaPacientes = Array.isArray(respostaPacientes)
+          ? respostaPacientes
+          : respostaPacientes?.data || [];
+        pacienteAtualizado = listaPacientes.find(
+          (p) => String(p.id) === String(id),
+        );
+      }
 
       if (pacienteAtualizado) {
         const nascimento = pacienteAtualizado.dataNascimento

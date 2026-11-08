@@ -33,6 +33,11 @@ export async function getPacientes() {
   return response.data;
 }
 
+export async function getPacienteById(id) {
+  const response = await api.get(`/pacientes/${id}`);
+  return response.data;
+}
+
 export async function createPaciente(dadosPaciente) {
   const response = await api.post(
     "/pacientes",

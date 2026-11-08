@@ -41,6 +41,8 @@ export const PatientModalSchema = z.object({
     .min(1, "A Idade não pode ser Negativa")
     .max(120, "A Idade deve ser no maximo 120 anos"),
   telefone: z.string().optional().or(z.literal("")),
+  nomeFamiliar: z.string().optional().or(z.literal("")),
+  parentescoFamiliar: z.string().optional().or(z.literal("")),
   cpf: z
     .string()
     .nullable()

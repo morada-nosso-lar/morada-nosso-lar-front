@@ -249,7 +249,7 @@ export default function PatientProfileCard({
             <Typography
               sx={{ fontSize: "13px", fontWeight: 500, color: "#1C1C1E" }}
             >
-              {loading ? "--" : (telefoneValue || "Não informado")}
+              {loading ? "--" : formatTelefone(telefoneValue)}
             </Typography>
           </Box>
         </Box>
