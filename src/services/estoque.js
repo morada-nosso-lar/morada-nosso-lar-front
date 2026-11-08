@@ -53,6 +53,16 @@ export async function updateProduto(id, dadosProduto) {
   return response.data;
 }
 
+/**
+ * Atualização parcial via PATCH — envia apenas os campos informados.
+ * Usado para salvar o estoque mínimo personalizado sem precisar
+ * repassar todos os campos obrigatórios do produto.
+ */
+export async function patchProduto(id, campos) {
+  const response = await api.patch(`/estoque/${id}`, campos);
+  return response.data;
+}
+
 export async function deleteProduto(id) {
   const response = await api.delete(`/estoque/${id}`);
   return response.data;

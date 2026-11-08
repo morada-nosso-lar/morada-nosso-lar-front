@@ -26,6 +26,7 @@ import {
   createProduto,
   deleteProduto,
   updateProduto,
+  patchProduto,
 } from "../../services/estoque";
 import { getPacientes } from "../../services/pacientes";
 
@@ -205,10 +206,36 @@ export default function EstoquePaciente() {
     }
   };
 
+  /**
+   * Atualiza o estoque mínimo personalizado de um item inline na tabela.
+   */
+  const handleUpdateEstoqueMinimo = async (itemAtual, novoMinimo) => {
+    try {
+      const response = await patchProduto(itemAtual.id, {
+        estoque_minimo: novoMinimo,
+      });
+      const itemAtualizado = response?.data ?? { ...itemAtual, estoqueMinimo: novoMinimo };
+      setMedicamentos((prev) =>
+        prev.map((item) =>
+          item.id === itemAtual.id
+            ? { ...item, estoqueMinimo: itemAtualizado.estoqueMinimo ?? novoMinimo }
+            : item,
+        ),
+      );
+      setSnackbarMessage(`Estoque mínimo de "${itemAtual.nome}" atualizado para ${novoMinimo} unidade(s)`);
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true);
+    } catch (error) {
+      console.error("Erro ao atualizar estoque mínimo:", error);
+      setSnackbarMessage("Não foi possível salvar o estoque mínimo.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
+    }
+  };
+
   function handleDeleteItem(itemId) {
     setItemToDelete(itemId);
-    setOpenDeleteDialog(true);
-  }
+    setOpenDeleteDialog(true);  }
 
   async function confirmDeleteProduto() {
     try {
@@ -301,6 +328,7 @@ export default function EstoquePaciente() {
         medicamentos={medicamentos}
         onDelete={handleDeleteItem}
         onUpdateQuantidade={handleUpdateQuantidade}
+        onUpdateEstoqueMinimo={handleUpdateEstoqueMinimo}
         loading={loading}
       />
 
